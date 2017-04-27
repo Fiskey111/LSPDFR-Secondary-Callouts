@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2ABFFA41-AFCF-493A-A618-282E59F0A430}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Secondary_Callouts</RootNamespace>
+    <AssemblyName>Secondary Callouts</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BetterEMS">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\Plugins\LSPDFR\BetterEMS.dll</HintPath>
+    </Reference>
+    <Reference Include="ComputerPlus">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\Plugins\LSPDFR\ComputerPlus.dll</HintPath>
+    </Reference>
+    <Reference Include="Fiskey111Common">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\Fiskey111Common.dll</HintPath>
+    </Reference>
+    <Reference Include="LMS.Common">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\LMS.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="LSPD First Response">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\Plugins\LSPD First Response.dll</HintPath>
+    </Reference>
+    <Reference Include="LSPDFR+">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\Plugins\LSPDFR\LSPDFR+.dll</HintPath>
+    </Reference>
+    <Reference Include="PoliceSmartRadio">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\Plugins\LSPDFR\PoliceSmartRadio.dll</HintPath>
+    </Reference>
+    <Reference Include="RagePluginHookSDK">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\SDK\RagePluginHookSDK.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="API\API.cs" />
+    <Compile Include="API\PluginCheck.cs" />
+    <Compile Include="BaseClass\BaseCallout.cs" />
+    <Compile Include="Callouts\FightInProgress.cs" />
+    <Compile Include="CommonMethods.cs" />
+    <Compile Include="ExtensionMethods\Entities.cs" />
+    <Compile Include="ExtensionMethods\Logging.cs" />
+    <Compile Include="ExtensionMethods\Notifications.cs" />
+    <Compile Include="FalseCallHandler.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="Objects\AmbientEvent.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="Startup\AmbientHandler.cs" />
+    <Compile Include="Startup\CalloutLoader.cs" />
+    <Compile Include="Startup\StartDuty.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AmbientEvents\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
