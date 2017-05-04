@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Secondary_Callouts</RootNamespace>
     <AssemblyName>Secondary Callouts</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -69,10 +70,13 @@
     <Compile Include="API\API.cs" />
     <Compile Include="API\PluginCheck.cs" />
     <Compile Include="BaseClass\BaseCallout.cs" />
+    <Compile Include="CalloutStandardization.cs" />
+    <Compile Include="Callouts\EMSAssistance.cs" />
     <Compile Include="Callouts\FightInProgress.cs" />
     <Compile Include="CommonMethods.cs" />
     <Compile Include="ExtensionMethods\Entities.cs" />
     <Compile Include="ExtensionMethods\Logging.cs" />
+    <Compile Include="ExtensionMethods\Misc.cs" />
     <Compile Include="ExtensionMethods\Notifications.cs" />
     <Compile Include="FalseCallHandler.cs" />
     <Compile Include="Main.cs" />
@@ -87,6 +91,10 @@
     <Folder Include="AmbientEvents\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy /Y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\Plugins\LSPDFR\$(TargetFileName)"
+copy /Y "$(TargetDir)\$(TargetName).pdb" "C:\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\Plugins\LSPDFR\$(TargetName).pdb"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

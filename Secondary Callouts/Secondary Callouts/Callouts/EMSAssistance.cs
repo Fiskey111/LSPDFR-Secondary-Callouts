@@ -1,7 +1,9 @@
-﻿using LSPD_First_Response.Mod.API;
+﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using LSPD_First_Response.Mod.API;
 using LSPD_First_Response.Mod.Callouts;
 using Rage;
 using SecondaryCallouts;
@@ -10,16 +12,19 @@ using Secondary_Callouts.ExtensionMethods;
 
 namespace Secondary_Callouts.Callouts
 {
-    [CalloutInfo("Fight in Progress", CalloutProbability.Medium)]
-    public class Fight : BaseCallout
+    [CalloutInfo("EMS Requires Assistance", CalloutProbability.Medium)]
+    public class EMSAssistance : BaseCallout
     {
-        private EFightState _state;
+        private EState _state;
+
+        private Vehicle _ambulance;
+        private List<Ped> _emsList;
 
         private const string CallName = "";
-        private const string CalloutMsg = "~y~Fight~w~ in progress - respond ~r~Code 3";
-        private const string CalloutResponseInfo = "~b~Officers~w~ in need of assistance with fight; respond ~y~Code 3~w~ and assist";
+        private const string CalloutMsg = "~g~EMS~w~ requires assistance - respond ~r~Code 3";
+        private const string CalloutResponseInfo = "~g~EMS~w~ in need of assistance with fight; respond ~y~Code 3~w~ and assist";
         private const string ComputerPlusUpdate =
-            "Multiple individuals reported fighting; some may be armed with weapons.\nOfficers on scene";
+            "EMS reported in fight; some may be armed with weapons.";
 
         private string _startScanner =
             $"ATTN_UNIT_02 {Fiskey111Common.OfficerSettings.UnitName()} CITIZENS_REPORT ASSAULT_BAT";
@@ -35,7 +40,7 @@ namespace Secondary_Callouts.Callouts
 
             StartScannerAudio = _startScanner;
 
-            ComputerPlus_CallMsg = $"Fight reported near {World.GetStreetName(SpawnPoint)}. Multiple involved parties. Officers on scene.";
+            ComputerPlus_CallMsg = $"EMS requires immediate backup near {World.GetStreetName(SpawnPoint)}. Multiple involved parties.";
 
             return base.OnBeforeCalloutDisplayed();
         }
@@ -44,9 +49,15 @@ namespace Secondary_Callouts.Callouts
         {
             AcceptScannerAudio = _acceptAudio;
 
-            PedList = SpawnPeds(Fiskey111Common.Rand.RandomNumber(1, 10));
+            _ambulance = new Vehicle(new Model("ambulance"), SpawnPoint)
+            {
+                IsSirenOn = true,
+                IsSirenSilent = true
+            };
 
-            CreateCopsOnScene();
+            _emsList = SpawnPeds("s_m_m_paramedic_01", 2, 1f, 2f);
+
+            PedList = SpawnPeds(Fiskey111Common.Rand.RandomNumber(1, 4));
 
             ResponseInfo = CalloutResponseInfo;
 
@@ -60,8 +71,8 @@ namespace Secondary_Callouts.Callouts
             }
 
             if (ComputerPlus_Active) ComputerPlusAPI.AddUpdateToCallout(ComputerPlus_GUID, ComputerPlusUpdate);
-            
-            _state = EFightState.EnRoute;
+
+            _state = EState.Accepted;
 
             return base.OnCalloutAccepted();
         }
@@ -74,10 +85,10 @@ namespace Secondary_Callouts.Callouts
 
             switch (_state)
             {
-                case EFightState.EnRoute:
+                case EState.Accepted:
                     if (Game.LocalPlayer.Character.Position.DistanceTo(SpawnPoint) > 100f) break;
 
-                    _state = EFightState.DecisionMade;
+                    _state = EState.EnRoute;
                     if (ComputerPlus_Active) ComputerPlusAPI.SetCalloutStatusToAtScene(ComputerPlus_GUID);
 
                     CommonMethods.DisplayMenuHelp();
@@ -86,15 +97,19 @@ namespace Secondary_Callouts.Callouts
 
                     SetRelationshipsHate();
 
-                    StartPursuit();
-
                     StartFightTask();
                     break;
-                case EFightState.DecisionMade:
-                    _state = EFightState.Checking;
+                case EState.EnRoute:
+                    if (Game.LocalPlayer.Character.Position.DistanceTo(SpawnPoint) > 20f) break;
+
+                    _state = EState.OnScene;
                     if (AreaBlip.Exists()) AreaBlip.Delete();
+
+                    CreateBlips();
+
+                    StartPursuit();
                     break;
-                case EFightState.Checking:
+                case EState.Checking:
                     if (IsPursuit && IsPursuitCompleted())
                         CalloutFinished();
                     else if (PedList.PedCheck())
@@ -130,6 +145,9 @@ namespace Secondary_Callouts.Callouts
                 if (!ped) continue;
                 ped.RelationshipGroup = $"perp{i}";
             }
+
+            foreach (var ems in _emsList)
+                if (ems) ems.RelationshipGroup = "ems";
         }
 
         private void SetRelationshipsHate()
@@ -137,9 +155,9 @@ namespace Secondary_Callouts.Callouts
             foreach (var perp in PedList)
             {
                 if (!perp) continue;
-                foreach (var perp2 in PedList)
+                foreach (var emt in _emsList)
                     Game.SetRelationshipBetweenRelationshipGroups(perp.RelationshipGroup,
-                        perp2.RelationshipGroup, Relationship.Hate);
+                        emt.RelationshipGroup, Relationship.Hate);
             }
         }
 
@@ -169,11 +187,17 @@ namespace Secondary_Callouts.Callouts
             }
         }
 
-        public enum EFightState
+        private void CreateBlips()
         {
+            foreach (var emt in _emsList)
+                if (emt) BlipList.Add(CalloutStandardization.CreateStandardizedBlip(emt, CalloutStandardization.BlipTypes.Support));
+        }
+
+        public enum EState
+        {
+            Accepted,
             EnRoute,
             OnScene,
-            DecisionMade,
             Checking
         }
     }

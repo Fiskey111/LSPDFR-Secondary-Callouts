@@ -13,6 +13,7 @@ namespace Secondary_Callouts.Startup
         {
             "Registering callouts...".AddLog(true);
             RegisterCallout(typeof(Fight));
+            RegisterCallout(typeof(EMSAssistance));
 
             $"{_calloutNumber} high-quality callouts loaded!".AddLog(true);
         }

@@ -7,9 +7,8 @@ namespace Secondary_Callouts.ExtensionMethods
         internal static void AddLog(this string log, bool release = false)
         {
 #if DEBUG
-            Game.LogTrivial($"[SECONDARY CALLOUTS]: {log}");
+            if (!release) Game.LogTrivial($"[SECONDARY CALLOUTS]: {log}");
 #endif
-
             if (release) Game.LogTrivial($"[SECONDARY CALLOUTS]: {log}");
         }
 

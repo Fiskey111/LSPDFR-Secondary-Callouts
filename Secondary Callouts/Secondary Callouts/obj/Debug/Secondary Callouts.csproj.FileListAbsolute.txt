@@ -1,1 +1,16 @@
 C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\obj\Debug\Secondary Callouts.csprojResolveAssemblyReference.cache
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\Secondary Callouts.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\Secondary Callouts.pdb
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\Fiskey111Common.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\LMS.Common.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\LSPD First Response.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\RagePluginHookSDK.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\ComputerPlus.pdb
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\LSPD First Response.pdb
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\RagePluginHookSDK.xml
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\obj\Debug\Secondary Callouts.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\obj\Debug\Secondary Callouts.pdb
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\BetterEMS.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\ComputerPlus.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\LSPDFR+.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\PoliceSmartRadio.dll
