@@ -49,6 +49,9 @@
     <Reference Include="LSPDFR+">
       <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\Plugins\LSPDFR\LSPDFR+.dll</HintPath>
     </Reference>
+    <Reference Include="LtFlash.Common">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\LtFlash.Common.dll</HintPath>
+    </Reference>
     <Reference Include="PoliceSmartRadio">
       <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\Plugins\LSPDFR\PoliceSmartRadio.dll</HintPath>
     </Reference>
@@ -73,7 +76,12 @@
     <Compile Include="CalloutStandardization.cs" />
     <Compile Include="Callouts\EMSAssistance.cs" />
     <Compile Include="Callouts\FightInProgress.cs" />
+    <Compile Include="Callouts\FootPursuit.cs" />
+    <Compile Include="Callouts\GangAttack.cs" />
     <Compile Include="CommonMethods.cs" />
+    <Compile Include="Detective\Conversation.cs" />
+    <Compile Include="Detective\ConversationLineData.cs" />
+    <Compile Include="Detective\Detective.cs" />
     <Compile Include="ExtensionMethods\Entities.cs" />
     <Compile Include="ExtensionMethods\Logging.cs" />
     <Compile Include="ExtensionMethods\Misc.cs" />
@@ -81,6 +89,7 @@
     <Compile Include="FalseCallHandler.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Objects\AmbientEvent.cs" />
+    <Compile Include="Objects\ScenarioHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Startup\AmbientHandler.cs" />

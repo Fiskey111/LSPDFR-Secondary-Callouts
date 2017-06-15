@@ -15,14 +15,12 @@ namespace Secondary_Callouts.Callouts
     [CalloutInfo("EMS Requires Assistance", CalloutProbability.Medium)]
     public class EMSAssistance : BaseCallout
     {
-        private EState _state;
-
         private Vehicle _ambulance;
         private List<Ped> _emsList;
 
         private const string CallName = "";
         private const string CalloutMsg = "~g~EMS~w~ requires assistance - respond ~r~Code 3";
-        private const string CalloutResponseInfo = "~g~EMS~w~ in need of assistance with fight; respond ~y~Code 3~w~ and assist";
+        private const string CalloutResponseInfo = "~g~EMS~w~ in need of assistance with fight; respond ~r~Code 3~w~ and assist";
         private const string ComputerPlusUpdate =
             "EMS reported in fight; some may be armed with weapons.";
 
@@ -61,18 +59,11 @@ namespace Secondary_Callouts.Callouts
 
             ResponseInfo = CalloutResponseInfo;
 
-            if (PedList.Count > 0)
-            {
-                foreach (var ped in PedList)
-                {
-                    if (!ped) continue;
-                    if (Fiskey111Common.Rand.RandomNumber(13) == 1) GiveWeaponOrArmor(ped);
-                }
-            }
+            GiveWeaponOrArmor(PedList);
 
             if (ComputerPlus_Active) ComputerPlusAPI.AddUpdateToCallout(ComputerPlus_GUID, ComputerPlusUpdate);
 
-            _state = EState.Accepted;
+            State = EState.Accepted;
 
             return base.OnCalloutAccepted();
         }
@@ -83,12 +74,12 @@ namespace Secondary_Callouts.Callouts
 
             if (IsFalseCall) return;
 
-            switch (_state)
+            switch (State)
             {
                 case EState.Accepted:
                     if (Game.LocalPlayer.Character.Position.DistanceTo(SpawnPoint) > 100f) break;
 
-                    _state = EState.EnRoute;
+                    State = EState.EnRoute;
                     if (ComputerPlus_Active) ComputerPlusAPI.SetCalloutStatusToAtScene(ComputerPlus_GUID);
 
                     CommonMethods.DisplayMenuHelp();
@@ -102,7 +93,7 @@ namespace Secondary_Callouts.Callouts
                 case EState.EnRoute:
                     if (Game.LocalPlayer.Character.Position.DistanceTo(SpawnPoint) > 20f) break;
 
-                    _state = EState.OnScene;
+                    State = EState.OnScene;
                     if (AreaBlip.Exists()) AreaBlip.Delete();
 
                     CreateBlips();
@@ -118,25 +109,13 @@ namespace Secondary_Callouts.Callouts
             }
         }
 
-        private void GiveWeaponOrArmor(Ped ped)
+        public override void End()
         {
-            if (!ped) return;
-            switch (Fiskey111Common.Rand.RandomNumber(1, 4))
-            {
-                case 1:
-                    var gun1 = new Weapon("WEAPON_BAT", SpawnPoint, -1);
-                    gun1.GiveTo(ped);
-                    break;
-                case 2:
-                    var gun2 = new Weapon("WEAPON_PISTOL", SpawnPoint, 100);
-                    gun2.GiveTo(ped);
-                    break;
-                case 3:
-                    ped.Armor = 100;
-                    break;
-            }
-        }
+            base.End();
 
+            _ambulance.Dismiss();
+        }
+        
         private void SetRelationshipGroups()
         {
             for (var i = 1; i < PedList.Count + 1; i++)
@@ -168,7 +147,11 @@ namespace Secondary_Callouts.Callouts
             var pedList = new List<Ped>();
             foreach (var p in PedList)
             {
-                if (PedList.IndexOf(p) == 0) pedList.Add(p);
+                if (PedList.IndexOf(p) == 0)
+                {
+                    pedList.Add(p);
+                    continue;
+                }
                 if (Fiskey111Common.Rand.RandomNumber(1, 5) == 1) pedList.Add(p);
             }
 
@@ -191,14 +174,6 @@ namespace Secondary_Callouts.Callouts
         {
             foreach (var emt in _emsList)
                 if (emt) BlipList.Add(CalloutStandardization.CreateStandardizedBlip(emt, CalloutStandardization.BlipTypes.Support));
-        }
-
-        public enum EState
-        {
-            Accepted,
-            EnRoute,
-            OnScene,
-            Checking
         }
     }
 }

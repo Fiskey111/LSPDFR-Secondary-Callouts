@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using LSPD_First_Response.Mod.API;
 using Rage;
+using Rage.Native;
 
 namespace Secondary_Callouts.ExtensionMethods
 {
@@ -36,5 +37,10 @@ namespace Secondary_Callouts.ExtensionMethods
             }
             return true;
         }
+
+        public static void Task_Scenario(this Ped ped, string scenario) => NativeFunction.Natives.TASK_START_SCENARIO_IN_PLACE(ped, scenario.ToString(), 0, true);
+
+        public static void Task_Scenario(this Ped ped, string scenario, Vector3 position, float heading) => NativeFunction.Natives.TASK_START_SCENARIO_AT_POSITION(ped, scenario, position.X, position.Y, position.Z, heading, 0, 0, 1);
+
     }
 }

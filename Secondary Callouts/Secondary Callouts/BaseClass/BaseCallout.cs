@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Policy;
 using LSPD_First_Response.Engine.Scripting;
 using LSPD_First_Response.Mod.API;
 using LSPD_First_Response.Engine.Scripting.Entities;
@@ -16,7 +17,8 @@ namespace SecondaryCallouts
     public abstract class BaseCallout : Callout
     {
         public Vector3 SpawnPoint;
-        
+        public EState State;
+
         public string StartScannerAudio = "";
         public string AcceptScannerAudio = "";
         public string CalloutName = "Officer in Need of Assistance";
@@ -24,6 +26,7 @@ namespace SecondaryCallouts
 
         public bool FalseCall = true;
         public bool IsFalseCall => _isFalseCall;
+        public bool SpawnBlip = true;
 
         public ComputerPlusAPI.ResponseType ComputerPlus_ResponseType = ComputerPlusAPI.ResponseType.Code_3;
         public string ComputerPlus_CallMsg = "Respond to the call";
@@ -87,9 +90,11 @@ namespace SecondaryCallouts
 
             var position = SpawnPoint.Around(5f, 20f);
 
-            AreaBlip = CalloutStandardization.CreateStandardizedBlip(position, BlipType, BlipScale);
-
-            AreaBlip.EnableRoute(AreaBlip.Color);
+            if (SpawnBlip)
+            {
+                AreaBlip = CalloutStandardization.CreateStandardizedBlip(position, BlipType, BlipScale);
+                AreaBlip.EnableRoute(AreaBlip.Color);
+            }
 
             return base.OnCalloutAccepted();
         }
@@ -176,6 +181,74 @@ namespace SecondaryCallouts
             Functions.SetPursuitCopsCanJoin(PursuitHandler, true);
         }
 
+        public void AssignCopsToPursuit(IEnumerable<Ped> copList)
+        {
+            foreach (var p in copList)
+            {
+                if (!p) continue;
+
+                Functions.AddCopToPursuit(PursuitHandler, p);
+            }
+        }
+
+        public void GiveWeaponOrArmor(Ped ped)
+        {
+            if (!ped) return;
+            switch (Fiskey111Common.Rand.RandomNumber(1, 4))
+            {
+                case 1:
+                    var gun1 = new Weapon("WEAPON_BAT", SpawnPoint, -1);
+                    gun1.GiveTo(ped);
+                    break;
+                case 2:
+                    var gun2 = new Weapon("WEAPON_PISTOL", SpawnPoint, 100);
+                    gun2.GiveTo(ped);
+                    break;
+                case 3:
+                    ped.Armor = 100;
+                    break;
+            }
+        }
+
+        public void GiveWeaponOrArmor(IEnumerable<Ped> pedList)
+        {
+            if (PedList.Count < 1) return;
+
+            foreach (var ped in PedList)
+            {
+                if (!ped || Fiskey111Common.Rand.RandomNumber(13) != 1) continue;
+
+                switch (Fiskey111Common.Rand.RandomNumber(1, 5))
+                {
+                    case 1:
+                        var gun1 = new Weapon(new WeaponAsset((uint)WeaponHash.Bat), SpawnPoint, 100);
+                        gun1.GiveTo(ped);
+                        break;
+                    case 2:
+                        var gun2 = new Weapon(new WeaponAsset((uint)WeaponHash.Pistol), SpawnPoint, 100);
+                        gun2.GiveTo(ped);
+                        break;
+                    case 3:
+                        var gun3 = new Weapon(new WeaponAsset((uint)WeaponHash.PumpShotgun), SpawnPoint, 100);
+                        gun3.GiveTo(ped);
+                        break;
+                    case 4:
+                        ped.Armor = 100;
+                        break;
+                }
+            }
+        }
+
+        public void GiveFightTasks(IEnumerable<Ped> pedList, float radius = 40f)
+        {
+            foreach (var perp in pedList)
+            {
+                if (!perp) continue;
+
+                perp.Tasks.FightAgainstClosestHatedTarget(radius);
+            }
+        }
+
         public bool IsPursuitCompleted() => IsPursuit && Functions.IsPursuitStillRunning(PursuitHandler);
 
         public string[] GetPeds()
@@ -219,5 +292,7 @@ namespace SecondaryCallouts
             Functions.PlayScannerAudio("ATTENTION_ALL_UNITS_01 CODE_04_PATROL");
             CalloutName.DisplayNotification("~g~Code 4~w~, good work officer!");
         }
+        
+        public enum EState { Accepted, EnRoute, DecisionMade, OnScene, Checking }
     }
 }

@@ -13,11 +13,9 @@ namespace Secondary_Callouts.Callouts
     [CalloutInfo("Fight in Progress", CalloutProbability.Medium)]
     public class Fight : BaseCallout
     {
-        private EFightState _state;
-
         private const string CallName = "";
         private const string CalloutMsg = "~y~Fight~w~ in progress - respond ~r~Code 3";
-        private const string CalloutResponseInfo = "~b~Officers~w~ in need of assistance with fight; respond ~y~Code 3~w~ and assist";
+        private const string CalloutResponseInfo = "~b~Officers~w~ in need of assistance with fight; respond ~r~Code 3~w~ and assist";
         private const string ComputerPlusUpdate =
             "Multiple individuals reported fighting; some may be armed with weapons.\nOfficers on scene";
 
@@ -50,18 +48,11 @@ namespace Secondary_Callouts.Callouts
 
             ResponseInfo = CalloutResponseInfo;
 
-            if (PedList.Count > 0)
-            {
-                foreach (var ped in PedList)
-                {
-                    if (!ped) continue;
-                    if (Fiskey111Common.Rand.RandomNumber(13) == 1) GiveWeaponOrArmor(ped);
-                }
-            }
+            GiveWeaponOrArmor(PedList);
 
             if (ComputerPlus_Active) ComputerPlusAPI.AddUpdateToCallout(ComputerPlus_GUID, ComputerPlusUpdate);
-            
-            _state = EFightState.EnRoute;
+
+            State = EState.EnRoute;
 
             return base.OnCalloutAccepted();
         }
@@ -72,12 +63,12 @@ namespace Secondary_Callouts.Callouts
 
             if (IsFalseCall) return;
 
-            switch (_state)
+            switch (State)
             {
-                case EFightState.EnRoute:
+                case EState.EnRoute:
                     if (Game.LocalPlayer.Character.Position.DistanceTo(SpawnPoint) > 100f) break;
 
-                    _state = EFightState.DecisionMade;
+                    State = EState.DecisionMade;
                     if (ComputerPlus_Active) ComputerPlusAPI.SetCalloutStatusToAtScene(ComputerPlus_GUID);
 
                     CommonMethods.DisplayMenuHelp();
@@ -90,11 +81,11 @@ namespace Secondary_Callouts.Callouts
 
                     StartFightTask();
                     break;
-                case EFightState.DecisionMade:
-                    _state = EFightState.Checking;
+                case EState.DecisionMade:
+                    State = EState.Checking;
                     if (AreaBlip.Exists()) AreaBlip.Delete();
                     break;
-                case EFightState.Checking:
+                case EState.Checking:
                     if (IsPursuit && IsPursuitCompleted())
                         CalloutFinished();
                     else if (PedList.PedCheck())
@@ -102,26 +93,7 @@ namespace Secondary_Callouts.Callouts
                     break;
             }
         }
-
-        private void GiveWeaponOrArmor(Ped ped)
-        {
-            if (!ped) return;
-            switch (Fiskey111Common.Rand.RandomNumber(1, 4))
-            {
-                case 1:
-                    var gun1 = new Weapon("WEAPON_BAT", SpawnPoint, -1);
-                    gun1.GiveTo(ped);
-                    break;
-                case 2:
-                    var gun2 = new Weapon("WEAPON_PISTOL", SpawnPoint, 100);
-                    gun2.GiveTo(ped);
-                    break;
-                case 3:
-                    ped.Armor = 100;
-                    break;
-            }
-        }
-
+        
         private void SetRelationshipGroups()
         {
             for (var i = 1; i < PedList.Count + 1; i++)
@@ -150,7 +122,11 @@ namespace Secondary_Callouts.Callouts
             var pedList = new List<Ped>();
             foreach (var p in PedList)
             {
-                if (PedList.IndexOf(p) == 0) pedList.Add(p);
+                if (PedList.IndexOf(p) == 0)
+                {
+                    pedList.Add(p);
+                    continue;
+                }
                 if (Fiskey111Common.Rand.RandomNumber(1, 5) == 1) pedList.Add(p);
             }
 
@@ -167,14 +143,6 @@ namespace Secondary_Callouts.Callouts
                 if (IsPursuit && Functions.GetPursuitPeds(PursuitHandler).Contains(p)) continue;
                 p.Tasks.FightAgainstClosestHatedTarget(30f);
             }
-        }
-
-        public enum EFightState
-        {
-            EnRoute,
-            OnScene,
-            DecisionMade,
-            Checking
         }
     }
 }
