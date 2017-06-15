@@ -14,8 +14,8 @@ namespace Secondary_Callouts.Callouts
     [CalloutInfo("Gang Attack", CalloutProbability.Medium)]
     public class GangAttack : BaseCallout
     {
-        private List<Ped> BallasList = new List<Ped>();
-        private List<Ped> LostList = new List<Ped>();
+        private List<Ped> _ballasList = new List<Ped>();
+        private List<Ped> _lostList = new List<Ped>();
 
         private const string CallName = "";
         private const string CalloutMsg = "~b~Officers~w~ require assistance\nShots fired by gang members - respond ~r~Code 3";
@@ -69,10 +69,10 @@ namespace Secondary_Callouts.Callouts
             var lostSpawn = World.GetNextPositionOnStreet(ballasSpawn.Around(5f));
 
             for (var l = 1; l < Fiskey111Common.Rand.RandomNumber(5, 10); l++)
-                BallasList.Add(new Ped(_ballasModelArray[Fiskey111Common.Rand.RandomNumber(_ballasModelArray.Length)], ballasSpawn.Around(2f, 4f), 0f));
+                _ballasList.Add(new Ped(_ballasModelArray[Fiskey111Common.Rand.RandomNumber(_ballasModelArray.Length)], ballasSpawn.Around(2f, 4f), 0f));
 
             for (var l = 1; l < Fiskey111Common.Rand.RandomNumber(5, 10); l++)
-                LostList.Add(new Ped(_lostModelArray[Fiskey111Common.Rand.RandomNumber(_lostModelArray.Length)], lostSpawn.Around(2f, 4f), 0f));
+                _lostList.Add(new Ped(_lostModelArray[Fiskey111Common.Rand.RandomNumber(_lostModelArray.Length)], lostSpawn.Around(2f, 4f), 0f));
 
             ResponseInfo = CalloutResponseInfo;
 
@@ -100,18 +100,18 @@ namespace Secondary_Callouts.Callouts
 
                     if (ComputerPlus_Active) ComputerPlusAPI.SetCalloutStatusToAtScene(ComputerPlus_GUID);
 
-                    SetRelationshipGroups(BallasList, "FiskeyBallas");
-                    SetRelationshipGroups(LostList, "FiskeyLost");
+                    SetRelationshipGroups(_ballasList, "FiskeyBallas");
+                    SetRelationshipGroups(_lostList, "FiskeyLost");
 
-                    SetRelationshipsHate(BallasList, LostList);
+                    SetRelationshipsHate(_ballasList, _lostList);
 
-                    SetRelationshipsHate(CopPedList, BallasList);
-                    SetRelationshipsHate(CopPedList, LostList);
-                    SetPlayerRelationships(BallasList);
-                    SetPlayerRelationships(LostList);
+                    SetRelationshipsHate(CopPedList, _ballasList);
+                    SetRelationshipsHate(CopPedList, _lostList);
+                    SetPlayerRelationships(_ballasList);
+                    SetPlayerRelationships(_lostList);
 
-                    GiveFightTasks(BallasList);
-                    GiveFightTasks(LostList);
+                    GiveFightTasks(_ballasList);
+                    GiveFightTasks(_lostList);
                     break;
                 case EState.Checking:
                     if (IsPursuit && IsPursuitCompleted())
