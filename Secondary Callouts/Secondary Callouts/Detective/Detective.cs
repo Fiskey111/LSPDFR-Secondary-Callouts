@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using LtFlash.Common.Processes;
 using Rage;
 using Secondary_Callouts.ExtensionMethods;
@@ -11,25 +13,38 @@ namespace Secondary_Callouts.Detective
         public Ped DetectivePed;
         public Vehicle DetectiveVeh;
         public Vector3 TargetPosition;
-        //public DetectiveDialogue Dialogue;
+        public MultipleOptionLine[] QuestionList;
         public Blip DetectiveBlip;
         public bool IsRunning;
+        public MultipleOptionConversation Conversation;
 
         private ProcessHost _processHost = new ProcessHost();
+        private ScenarioHelper _scenario;
 
-        public Detective(Vector3 position)
+        public Detective(Vector3 position, IEnumerable<MultipleOptionLine> options)
         {
-            TargetPosition = position;
-            var sp = World.GetNextPositionOnStreet(TargetPosition.Around(100f, 200f));
+            TargetPosition = World.GetNextPositionOnStreet(position.Around2D(2f));
+            var sp = World.GetNextPositionOnStreet(TargetPosition.Around2D(100f, 200f));
             DetectiveVeh = new Vehicle(new Model("fbi"), sp);
+            DetectiveVeh.IsPersistent = true;
             DetectivePed = new Ped(new Model(0xedbc7546), sp, 0f);
             DetectivePed.WarpIntoVehicle(DetectiveVeh, -1);
+            DetectivePed.MakeMissionPed();
+            DetectivePed.BlockPermanentEvents = true;
+            DetectivePed.KeepTasks = true;
+            QuestionList = options.ToArray();
+            Conversation = new MultipleOptionConversation(QuestionList, DetectivePed);
         }
 
-        public void Dispatch(float speed = 40f, VehicleDrivingFlags flags = VehicleDrivingFlags.Emergency)
+        public void Dispatch(float speed = 20f, VehicleDrivingFlags flags = VehicleDrivingFlags.Emergency)
         {
+            DetectiveBlip = new Blip(DetectivePed);
+            DetectiveBlip.SetStandardColor(CalloutStandardization.BlipTypes.Officers);
+            DetectiveBlip.SetBlipScalePed();
             DetectivePed.Tasks.DriveToPosition(TargetPosition, speed, flags, 5f);
             IsRunning = true;
+            "Detective Dispatched".DisplayNotification("A ~b~detective~w~ has been ~g~dispatched~w~ to your location");
+            Game.DisplayHelp("Wait where you are until the ~b~detective~w~ arrives.");
             _processHost.Start();
             _processHost.ActivateProcess(DriveFiber);
         }
@@ -39,20 +54,16 @@ namespace Secondary_Callouts.Detective
         {
             var sw = new Stopwatch();
             sw.Start();
-            while (true)
+            while (DetectivePed.DistanceTo(TargetPosition) > 5.5f)
             {
-                if (DetectivePed.TravelDistanceTo(TargetPosition) > 5f)
-                {
-                    if (sw.Elapsed.TotalSeconds > 360) WarpToPosition();
-                    GameFiber.Yield();
-                    continue;
-                }
-
-                GameFiber.Sleep(0500);
-                ExitVehicleAndGoToPos();
-
+                GameFiber.Yield();
+#if DEBUG
+                Game.DisplaySubtitle(DetectivePed.DistanceTo(TargetPosition).ToString());
+#endif
+                if (sw.Elapsed.TotalSeconds > 45) WarpToPosition();
                 GameFiber.Yield();
             }
+            _processHost.SwapProcesses(DriveFiber, ExitVehicleAndGoToPos);
         }
 
         private void ExitVehicleAndGoToPos()
@@ -60,38 +71,79 @@ namespace Secondary_Callouts.Detective
             DetectivePed.Tasks.LeaveVehicle(DetectiveVeh, LeaveVehicleFlags.None);
             while (DetectivePed.IsGettingIntoVehicle)
                 GameFiber.Yield();
-            DetectivePed.Tasks.FollowNavigationMeshToPosition(TargetPosition, 0f, 4f, 3f);
+
+            DetectivePed.Tasks.GoStraightToPosition(TargetPosition.Around2D(1f, 2f), 3f, 0f, 0f, 10000);
             while (DetectivePed.Position.DistanceTo(TargetPosition) > 3.5f)
                 GameFiber.Yield();
 
-            StartScenario();
+            _processHost.SwapProcesses(ExitVehicleAndGoToPos, StartScenario);
         }
 
         private void StartScenario()
         {
-            var scenario = new ScenarioHelper(DetectivePed, ScenarioHelper.Scenario.CODE_HUMAN_MEDIC_TIME_OF_DEATH);
-            scenario.StartNonLooped();
+            _scenario = new ScenarioHelper(DetectivePed, ScenarioHelper.Scenario.CODE_HUMAN_POLICE_INVESTIGATE);
+            _scenario.StartLooped();
+         
+            GameFiber.Sleep(1500);
+            var sw = new Stopwatch();
+            sw.Start();
+            var ran = Fiskey111Common.Rand.RandomNumber(10, 25);
+            while (sw.Elapsed.Seconds < ran) GameFiber.Yield();
+            _scenario.Stop();
 
-            while (scenario.IsRunning) GameFiber.Yield();
+            DetectivePed.Tasks.GoToOffsetFromEntity(Game.LocalPlayer.Character, 3f, 10f, 4f);
+            while (DetectivePed.Position.DistanceTo(Game.LocalPlayer.Character) > 3.5f)
+                GameFiber.Yield();
             
             "Scenario ended".AddLog();
 
-            AwaitPlayerTalk();
+            _processHost.SwapProcesses(StartScenario, AwaitPlayerTalk);
         }
 
         private void AwaitPlayerTalk()
         {
-            while (Game.LocalPlayer.Character.Position.DistanceTo(DetectivePed) > 3f) GameFiber.Yield();
+            Conversation.Start();
+            
+            _processHost.SwapProcesses(AwaitPlayerTalk, AwaitFinish);
+        }
 
-            // Start interrogation
+        private void AwaitFinish()
+        {
+            while (!Conversation.HasEnded)
+            {
+                if (!_scenario.IsRunning) _scenario.StartNonLooped();
+                GameFiber.Yield();
+            }
+
+            _scenario.Stop();
+
+            GameFiber.Sleep(3000);
+
+            DetectivePed.Tasks.EnterVehicle(DetectiveVeh, -1);
+
+            while (!DetectivePed.IsInVehicle(DetectiveVeh, false)) GameFiber.Yield();
+
+            DetectivePed.Tasks.CruiseWithVehicle(40f);
+
+            GameFiber.Sleep(5000);
+
+            this.End();
+        }
+
+        private void End()
+        {
+            _processHost.Stop();
+
+            if (DetectivePed) DetectivePed.Dismiss();
+            if (DetectiveVeh) DetectiveVeh.Dismiss();
+            if (DetectiveBlip) DetectiveBlip.Delete();
         }
 
         private void WarpToPosition()
         {
             "Warping to position...".AddLog(true);
             DetectiveVeh.Position = TargetPosition;
-            GameFiber.Sleep(0500);
-            ExitVehicleAndGoToPos();
+            _processHost.SwapProcesses(DriveFiber, ExitVehicleAndGoToPos);
         }
     }
 }

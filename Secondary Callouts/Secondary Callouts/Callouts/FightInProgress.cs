@@ -1,12 +1,12 @@
 ﻿using LSPD_First_Response.Mod.API;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using LSPD_First_Response.Mod.Callouts;
 using Rage;
 using SecondaryCallouts;
 using Secondary_Callouts.API;
 using Secondary_Callouts.ExtensionMethods;
+using Secondary_Callouts.Objects;
 
 namespace Secondary_Callouts.Callouts
 {
@@ -14,22 +14,22 @@ namespace Secondary_Callouts.Callouts
     public class Fight : BaseCallout
     {
         private const string CallName = "";
-        private const string CalloutMsg = "~y~Fight~w~ in progress - respond ~r~Code 3";
+        private const string CalloutMsg = "~y~Fight~w~ in progress\nRespond ~r~Code 3";
         private const string CalloutResponseInfo = "~b~Officers~w~ in need of assistance with fight; respond ~r~Code 3~w~ and assist";
         private const string ComputerPlusUpdate =
             "Multiple individuals reported fighting; some may be armed with weapons.\nOfficers on scene";
 
         private string _startScanner =
-            $"ATTN_UNIT_02 {Fiskey111Common.OfficerSettings.UnitName()} CITIZENS_REPORT ASSAULT_BAT";
+            $"ATTN_UNIT_02 {Settings.UnitName} CITIZENS_REPORT ASSAULT_BAT";
         private string _acceptAudio =
-            $"OFFICER_INTRO_01 COPY_DISPATCH OUTRO_01 DISPATCH_INTRO_01 REPORT_RESPONSE_COPY_02 {Fiskey111Common.OfficerSettings.UnitName()} NONLETHAL_WEAPONS RESPOND_CODE3";
+            $"OFFICER_INTRO_01 COPY_DISPATCH OUTRO_01 DISPATCH_INTRO_01 REPORT_RESPONSE_COPY_02 {Settings.UnitName} NONLETHAL_WEAPONS RESPOND_CODE3";
 
         public override bool OnBeforeCalloutDisplayed()
         {
             CalloutName = CallName;
             CalloutMessage = CalloutMsg;
 
-            DisplayCalloutMessage(CalloutMsg);
+            GiveBlipInfo(CalloutStandardization.BlipTypes.AreaSearch, 0.75f);
 
             StartScannerAudio = _startScanner;
 
@@ -43,16 +43,18 @@ namespace Secondary_Callouts.Callouts
             AcceptScannerAudio = _acceptAudio;
 
             PedList = SpawnPeds(Fiskey111Common.Rand.RandomNumber(1, 10));
-
-            CreateCopsOnScene();
+            
+            CreateCopsOnScene(false);
 
             ResponseInfo = CalloutResponseInfo;
-
+            
             GiveWeaponOrArmor(PedList);
+
+            AddPedListWeapons(PedList, PedType.Type.Suspect);
 
             if (ComputerPlus_Active) ComputerPlusAPI.AddUpdateToCallout(ComputerPlus_GUID, ComputerPlusUpdate);
 
-            State = EState.EnRoute;
+            CalloutEState = EState.EnRoute;
 
             return base.OnCalloutAccepted();
         }
@@ -63,12 +65,12 @@ namespace Secondary_Callouts.Callouts
 
             if (IsFalseCall) return;
 
-            switch (State)
+            switch (CalloutEState)
             {
                 case EState.EnRoute:
-                    if (Game.LocalPlayer.Character.Position.DistanceTo(SpawnPoint) > 100f) break;
+                    if (PlayerDistanceFromSpawnPoint > 100f) break;
 
-                    State = EState.DecisionMade;
+                    CalloutEState = EState.DecisionMade;
                     if (ComputerPlus_Active) ComputerPlusAPI.SetCalloutStatusToAtScene(ComputerPlus_GUID);
 
                     CommonMethods.DisplayMenuHelp();
@@ -80,16 +82,25 @@ namespace Secondary_Callouts.Callouts
                     StartPursuit();
 
                     StartFightTask();
+
                     break;
                 case EState.DecisionMade:
-                    State = EState.Checking;
+                    if (PlayerDistanceFromSpawnPoint > 50f) break;
+                    if (!StartedWeaponFireCheck) StartWeaponFireCheck(PedList.ToList());
+
+                    if (PlayerDistanceFromSpawnPoint > 40f) break;
+
+                    CalloutEState = EState.Checking;
                     if (AreaBlip.Exists()) AreaBlip.Delete();
+
                     break;
                 case EState.Checking:
-                    if (IsPursuit && IsPursuitCompleted())
+                    PedList = SuspectPositionCheck(PedList);
+                    if (IsPursuit && IsPursuitCompleted() && PedCheck(PedList.ToList()))
                         CalloutFinished();
-                    else if (PedList.PedCheck())
+                    else if (PedCheck(PedList.ToList()))
                         CalloutFinished();
+
                     break;
             }
         }
@@ -112,6 +123,8 @@ namespace Secondary_Callouts.Callouts
                 foreach (var perp2 in PedList)
                     Game.SetRelationshipBetweenRelationshipGroups(perp.RelationshipGroup,
                         perp2.RelationshipGroup, Relationship.Hate);
+
+                if (CopPedList.Count > 0) Game.SetRelationshipBetweenRelationshipGroups(perp.RelationshipGroup, CopPedList.FirstOrDefault().RelationshipGroup, Relationship.Hate);
             }
         }
 
@@ -142,6 +155,14 @@ namespace Secondary_Callouts.Callouts
                 if (!p) continue;
                 if (IsPursuit && Functions.GetPursuitPeds(PursuitHandler).Contains(p)) continue;
                 p.Tasks.FightAgainstClosestHatedTarget(30f);
+            }
+
+            if (CopPedList.Count <= 0) return;
+
+            foreach (var cop in CopPedList)
+            {
+                if (!cop) return;
+                cop.Tasks.FightAgainstClosestHatedTarget(30f);
             }
         }
     }

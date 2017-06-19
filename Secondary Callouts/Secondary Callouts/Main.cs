@@ -15,12 +15,11 @@ namespace Secondary_Callouts
 
         public void Functions_OnOnDutyStateChanged(bool onDuty)
         {
-            if (onDuty)
-            {
-                "Loading...".AddLog();
-                var fiber = new GameFiber(StartDuty.StartDutyMethods);
-                fiber.Start();
-            }
+            if (!onDuty) return;
+
+            "Loading...".AddLog();
+            var fiber = new GameFiber(StartDuty.StartDutyMethods);
+            fiber.Start();
         }
     }
 }

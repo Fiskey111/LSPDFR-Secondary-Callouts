@@ -7,6 +7,8 @@ namespace Secondary_Callouts
     {
         private static string _location = "Plugins/LSPDFR/Secondary Callouts/Settings.ini";
 
+        public static string UnitName = Fiskey111Common.OfficerSettings.UnitName();
+
         public static InitializationFile InitializeIni()
         {
             var ini = new InitializationFile(_location, CultureInfo.InvariantCulture, false);
@@ -14,16 +16,10 @@ namespace Secondary_Callouts
             return ini;
         }
 
-        public static bool AiAudio()
-        {
-            var ini = InitializeIni();
-            return ini.ReadBoolean("Options", "AIAudio", true);
-        }
-        
-        public static bool StartingAudio()
-        {
-            var ini = InitializeIni();
-            return ini.ReadBoolean("Options", "StartingAudio", true);
-        }
+        public static bool AiAudio() => InitializeIni().ReadBoolean("Options", "AIAudio", true);
+
+        public static bool StartingAudio() => InitializeIni().ReadBoolean("Options", "StartingAudio", true);
+
+        public static bool ShotsFiredCallAudio() => InitializeIni().ReadBoolean("Options", "ShotsFiredAudio", true);
     }
 }

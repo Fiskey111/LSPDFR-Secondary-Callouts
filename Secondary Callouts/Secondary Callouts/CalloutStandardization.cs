@@ -1,12 +1,5 @@
 ﻿using Rage;
 using Rage.Native;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Secondary_Callouts
 {
@@ -35,7 +28,7 @@ namespace Secondary_Callouts
         /// <para>Civilians = Bystanders/Witnesses/broken down/etc  [orange]</para>
         ///  <para>Other = Animals/Obstacles/Rocks/etc  [purple]</para>
         /// </summary>
-        public enum BlipTypes { Enemy = 1, Officers = 3, Support = 2, Civilians = 17, Other = 19, Standard = 9999 }
+        public enum BlipTypes { Enemy = 1, Officers = 3, Support = 2, AreaSearch = 5, Civilians = 17, Other = 19, Standard = 9999 }
 
         public static void SetBlipScalePed(this Blip blip)
         {

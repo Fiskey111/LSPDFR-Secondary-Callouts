@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LSPD_First_Response.Mod.API;
 using LSPD_First_Response.Mod.Callouts;
 using Rage;
 using SecondaryCallouts;
 using Secondary_Callouts.API;
 using Secondary_Callouts.ExtensionMethods;
+using Secondary_Callouts.Objects;
 
 namespace Secondary_Callouts.Callouts
 {
@@ -18,23 +16,23 @@ namespace Secondary_Callouts.Callouts
         private Vehicle _ambulance;
         private List<Ped> _emsList;
 
-        private const string CallName = "";
-        private const string CalloutMsg = "~g~EMS~w~ requires assistance - respond ~r~Code 3";
+        private bool _reactAndFlee, _hasArrived;
+
+        private const string CallName = "EMS Requires Assistance";
+        private const string CalloutMsg = "~g~EMS~w~ requires assistance\nRespond ~r~Code 3";
         private const string CalloutResponseInfo = "~g~EMS~w~ in need of assistance with fight; respond ~r~Code 3~w~ and assist";
         private const string ComputerPlusUpdate =
             "EMS reported in fight; some may be armed with weapons.";
 
         private string _startScanner =
-            $"ATTN_UNIT_02 {Fiskey111Common.OfficerSettings.UnitName()} CITIZENS_REPORT ASSAULT_BAT";
+            $"ATTN_UNIT_02 {Settings.UnitName} CITIZENS_REPORT ASSAULT_BAT";
         private string _acceptAudio =
-            $"OFFICER_INTRO_01 COPY_DISPATCH OUTRO_01 DISPATCH_INTRO_01 REPORT_RESPONSE_COPY_02 {Fiskey111Common.OfficerSettings.UnitName()} NONLETHAL_WEAPONS RESPOND_CODE3";
+            $"OFFICER_INTRO_01 COPY_DISPATCH OUTRO_01 DISPATCH_INTRO_01 REPORT_RESPONSE_COPY_02 {Settings.UnitName} NONLETHAL_WEAPONS RESPOND_CODE3";
 
         public override bool OnBeforeCalloutDisplayed()
         {
             CalloutName = CallName;
             CalloutMessage = CalloutMsg;
-
-            DisplayCalloutMessage(CalloutMsg);
 
             StartScannerAudio = _startScanner;
 
@@ -53,17 +51,23 @@ namespace Secondary_Callouts.Callouts
                 IsSirenSilent = true
             };
 
-            _emsList = SpawnPeds("s_m_m_paramedic_01", 2, 1f, 2f);
+            _emsList = SpawnPeds("s_m_m_paramedic_01", 2, 2f);
 
-            PedList = SpawnPeds(Fiskey111Common.Rand.RandomNumber(1, 4));
+            PedList = SpawnPeds(Fiskey111Common.Rand.RandomNumber(2, 6));
+
+            AddPedList(_emsList, PedType.Type.Service);
 
             ResponseInfo = CalloutResponseInfo;
 
+            BlipAlpha = 0.75f;
+
             GiveWeaponOrArmor(PedList);
+
+            AddPedListWeapons(PedList, PedType.Type.Suspect);
 
             if (ComputerPlus_Active) ComputerPlusAPI.AddUpdateToCallout(ComputerPlus_GUID, ComputerPlusUpdate);
 
-            State = EState.Accepted;
+            CalloutEState = EState.Accepted;
 
             return base.OnCalloutAccepted();
         }
@@ -74,36 +78,48 @@ namespace Secondary_Callouts.Callouts
 
             if (IsFalseCall) return;
 
-            switch (State)
+            switch (CalloutEState)
             {
                 case EState.Accepted:
-                    if (Game.LocalPlayer.Character.Position.DistanceTo(SpawnPoint) > 100f) break;
+                    if (PlayerDistanceFromSpawnPoint > 100f) break;
 
-                    State = EState.EnRoute;
+                    CalloutEState = EState.EnRoute;
                     if (ComputerPlus_Active) ComputerPlusAPI.SetCalloutStatusToAtScene(ComputerPlus_GUID);
 
                     CommonMethods.DisplayMenuHelp();
 
-                    SetRelationshipGroups();
+                    SetRelationshipGroups(PedList, "Fiskey111Perps");
+                    SetRelationshipGroups(_emsList, "Fiskey111EMS");
 
-                    SetRelationshipsHate();
+                    SetRelationshipsHate(PedList, _emsList);
+                    SetRelationshipsHate(_emsList, PedList);
+                    SetPlayerRelationships(_emsList, Relationship.Companion);
 
-                    StartFightTask();
+                    StartFightTask(PedList);
+                    StartFightTask(_emsList);
                     break;
                 case EState.EnRoute:
-                    if (Game.LocalPlayer.Character.Position.DistanceTo(SpawnPoint) > 20f) break;
+                    if (PlayerDistanceFromSpawnPoint > 50f) break;
+                    if (!StartedWeaponFireCheck) StartWeaponFireCheck(PedList.ToList());
 
-                    State = EState.OnScene;
+                    if (PlayerDistanceFromSpawnPoint > 40f) break;
+
+                    CalloutEState = EState.Checking;
                     if (AreaBlip.Exists()) AreaBlip.Delete();
 
                     CreateBlips();
 
                     StartPursuit();
+
+                    _hasArrived = true;
                     break;
                 case EState.Checking:
-                    if (IsPursuit && IsPursuitCompleted())
+                    CheckIfBeingArrested();
+                    if (_hasArrived) PedList = SuspectPositionCheck(PedList.ToList());
+
+                    if (IsPursuit && IsPursuitCompleted() && PedCheck(PedList.ToList()))
                         CalloutFinished();
-                    else if (PedList.PedCheck())
+                    else if (PedCheck(PedList.ToList()))
                         CalloutFinished();
                     break;
             }
@@ -115,30 +131,23 @@ namespace Secondary_Callouts.Callouts
 
             _ambulance.Dismiss();
         }
-        
-        private void SetRelationshipGroups()
+
+
+        private void SetRelationshipGroups(IEnumerable<Ped> pedList, string relGroup)
         {
-            for (var i = 1; i < PedList.Count + 1; i++)
+            var enumerable = pedList as Ped[] ?? pedList.ToArray();
+            if (enumerable.Length < 1) return;
+
+            foreach (var ped in enumerable)
             {
-                var ped = PedList[i - 1];
                 if (!ped) continue;
-                ped.RelationshipGroup = $"perp{i}";
-            }
 
-            foreach (var ems in _emsList)
-                if (ems) ems.RelationshipGroup = "ems";
-        }
-
-        private void SetRelationshipsHate()
-        {
-            foreach (var perp in PedList)
-            {
-                if (!perp) continue;
-                foreach (var emt in _emsList)
-                    Game.SetRelationshipBetweenRelationshipGroups(perp.RelationshipGroup,
-                        emt.RelationshipGroup, Relationship.Hate);
+                ped.RelationshipGroup = relGroup;
             }
         }
+
+        private void SetRelationshipsHate(IEnumerable<Ped> pedList1, IEnumerable<Ped> pedList2, Relationship groupRelationship = Relationship.Hate) => Game.SetRelationshipBetweenRelationshipGroups(pedList1.FirstOrDefault().RelationshipGroup, pedList2.FirstOrDefault().RelationshipGroup, groupRelationship);
+        private void SetPlayerRelationships(IEnumerable<Ped> pedList2, Relationship groupRelationship = Relationship.Hate) => Game.SetRelationshipBetweenRelationshipGroups(Game.LocalPlayer.Character.RelationshipGroup, pedList2.FirstOrDefault().RelationshipGroup, groupRelationship);
 
         private void StartPursuit()
         {
@@ -160,9 +169,9 @@ namespace Secondary_Callouts.Callouts
             CreatePursuit(pedList);
         }
 
-        private void StartFightTask()
+        private void StartFightTask(IEnumerable<Ped> pedList)
         {
-            foreach (var p in PedList)
+            foreach (var p in pedList)
             {
                 if (!p) continue;
                 if (IsPursuit && Functions.GetPursuitPeds(PursuitHandler).Contains(p)) continue;
@@ -174,6 +183,31 @@ namespace Secondary_Callouts.Callouts
         {
             foreach (var emt in _emsList)
                 if (emt) BlipList.Add(CalloutStandardization.CreateStandardizedBlip(emt, CalloutStandardization.BlipTypes.Support));
+        }
+
+        private void CheckIfBeingArrested()
+        {
+            if (_reactAndFlee) return;
+
+            if (PlayerDistanceFromSpawnPoint > 10f) return;
+
+            foreach (var p in _emsList)
+            {
+                if (!p) continue;
+                p.KeepTasks = true;
+                p.BlockPermanentEvents = true;
+                p.Tasks.ReactAndFlee(PedList.FirstOrDefault());
+            }
+
+            CreatePursuit(PedList);
+
+            foreach (var p in PedList)
+            {
+                if (!p || !IsPursuit || !IsPedInPursuit(p)) continue;
+                p.Tasks.FightAgainst(Game.LocalPlayer.Character);
+            }
+            
+            _reactAndFlee = true;
         }
     }
 }

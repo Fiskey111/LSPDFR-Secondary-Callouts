@@ -16,8 +16,10 @@ namespace Secondary_Callouts.Startup
                 CalloutLoader.RegisterCallouts();
                 
                 AmbientHandler.StartAmbientEvents();
+                
+                if (Settings.StartingAudio()) Functions.PlayScannerAudio($"ATTN_UNIT {Settings.UnitName} BEGIN_BEAT");
 
-                if (Settings.StartingAudio()) Functions.PlayScannerAudio("ATTN_UNIT BEGIN_BEAT");
+                Detective.DetectiveMenu.Main();
 
                 DisplayLoadedMessage();
             }
@@ -31,7 +33,7 @@ namespace Secondary_Callouts.Startup
         private static void DisplayLoadingMessage()
         {
             "Starting to load SECONDARY CALLOUTS...".AddLog(true);
-            " ".AddLog(true);
+            " ".AddLog(true); 
             " ".AddLog(true);
         }
 
