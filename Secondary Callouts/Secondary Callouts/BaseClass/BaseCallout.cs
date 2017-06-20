@@ -483,6 +483,13 @@ namespace SecondaryCallouts
             return true;
         }
 
+        public void GiveCourtCase(List<Ped> pedList, string crimes)
+        {
+            if (!PluginCheck.IsLSPDFRPlusRunning()) return;
+
+            LSPDFRPlusAPI.AddCourtCase(pedList, crimes);
+        }
+
         public void RequestDetectives()
         {
             var detective = new Detective(SpawnPoint, DetectiveQuestions.GetOptions());

@@ -11,7 +11,7 @@ namespace Secondary_Callouts.Callouts
     [CalloutInfo("Shots Fired on Officer", CalloutProbability.Medium)]
     public class ShotsOnOfficer : BaseCallout
     {
-        private const string CallName = "";
+        private const string CallName = "Shots Fired on Officer";
         private const string CalloutMsg = "~r~Shots fired~w~ on ~b~officer~w~\nRespond ~r~Code 3";
         private const string CalloutResponseInfo = "~b~Officers~w~ in need of assistance with shots fired; respond ~r~Code 3~w~ and assist";
         private const string ComputerPlusUpdate =

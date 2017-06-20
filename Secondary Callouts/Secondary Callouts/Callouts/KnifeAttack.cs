@@ -15,7 +15,7 @@ namespace Secondary_Callouts.Callouts
     {
         private List<Ped> _targetList = new List<Ped>();
 
-        private const string CallName = "";
+        private const string CallName = "Knife Attack in Progress";
         private const string CalloutMsg = "~y~Knife Attack~w~ in progress\nRespond ~r~Code 3";
         private const string CalloutResponseInfo = "~y~Civilians~w~ report individual with knife; respond ~r~Code 3~w~ and assist";
         private const string ComputerPlusUpdate =

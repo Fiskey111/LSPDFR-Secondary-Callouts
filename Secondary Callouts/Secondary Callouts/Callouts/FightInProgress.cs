@@ -13,7 +13,7 @@ namespace Secondary_Callouts.Callouts
     [CalloutInfo("Fight in Progress", CalloutProbability.Medium)]
     public class Fight : BaseCallout
     {
-        private const string CallName = "";
+        private const string CallName = "Fight in Progress";
         private const string CalloutMsg = "~y~Fight~w~ in progress\nRespond ~r~Code 3";
         private const string CalloutResponseInfo = "~b~Officers~w~ in need of assistance with fight; respond ~r~Code 3~w~ and assist";
         private const string ComputerPlusUpdate =
