@@ -16,7 +16,7 @@ namespace Secondary_Callouts.Callouts
     [CalloutInfo("Heavily Armed Person", CalloutProbability.VeryLow)]
     public class HeavilyArmed : BaseCallout
     {
-        private const string CallName = "";
+        private const string CallName = "Heavily Armed Individual(s)";
         private const string LSPDFRmsg = "~b~Officers~w~ require assistance with ~y~shots fired";
         private const string CalloutMsg = "~r~Shots fired~w~ on ~b~Officers~w~ by individual(s) with ~y~heavy armor and weapons~w~\nRespond ~r~Code 3";
         private const string CalloutResponseInfo = "~b~Officers~w~ in need of assistance with shots fired; respond ~r~Code 3~w~ and assist";

@@ -18,7 +18,7 @@ namespace Secondary_Callouts.Callouts
         private List<Ped> _lostList = new List<Ped>();
         private List<Vehicle> _vehList = new List<Vehicle>();
 
-        private const string CallName = "";
+        private const string CallName = "Gang War in Progress";
         private const string LSPDFRMsg = "~b~Officers~w~ require assistance for ~y~shots fired";
         private const string CalloutMsg = "~r~Shots fired~w~ on ~b~officers~w~ by ~p~gang~w~ members\nRespond ~r~Code 3~w~";
         private const string CalloutResponseInfo = "~b~Officers~w~ in need of assistance with shots fired; respond ~r~Code 3~w~ and assist";

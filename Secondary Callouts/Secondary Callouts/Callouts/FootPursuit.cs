@@ -11,7 +11,7 @@ namespace Secondary_Callouts.Callouts
     [CalloutInfo("Foot Pursuit", CalloutProbability.Medium)]
     public class FootPursuit : BaseCallout
     {
-        private const string CallName = "";
+        private const string CallName = "Officer Needs Assistance with Foot Pursuit";
         private const string CalloutMsg = "~b~Officer~w~ requires assistance\nRespond ~r~Code 3";
         private const string CalloutResponseInfo = "~b~Officer~w~ in need of assistance with foot pursuit; respond ~r~Code 3~w~ and assist";
         private const string ComputerPlusUpdate =

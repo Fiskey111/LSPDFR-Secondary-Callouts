@@ -32,34 +32,28 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BetterEMS">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\Plugins\LSPDFR\BetterEMS.dll</HintPath>
+      <HintPath>..\..\..\..\Development\BetterEMS_by_PNWParksFan_3.0\GTA V folder\Plugins\LSPDFR\BetterEMS.dll</HintPath>
     </Reference>
     <Reference Include="ComputerPlus">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\Plugins\LSPDFR\ComputerPlus.dll</HintPath>
+      <HintPath>..\..\..\..\Development\ComputerPlus_1.3.5.2_tag_8fb5eb0\Packaged\Plugins\LSPDFR\ComputerPlus.dll</HintPath>
     </Reference>
     <Reference Include="Fiskey111Common">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\Fiskey111Common.dll</HintPath>
-    </Reference>
-    <Reference Include="LMS.Common">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\LMS.Common.dll</HintPath>
+      <HintPath>..\..\..\..\Development\L.S.+Noir+v0.418.17.0\L.S. Noir v0.418.17.0\Grand Theft Auto V\Fiskey111Common.dll</HintPath>
     </Reference>
     <Reference Include="LSPD First Response">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\Plugins\LSPD First Response.dll</HintPath>
+      <HintPath>..\..\..\..\Development\LSPDFR 031 Manual Install\plugins\LSPD First Response.dll</HintPath>
     </Reference>
     <Reference Include="LSPDFR+">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\Plugins\LSPDFR\LSPDFR+.dll</HintPath>
+      <HintPath>..\..\..\..\Development\LSPDFR_ 1.6.5.0 by Albo1125 _ MinRPH 0.51\LSPDFR+ 1.6.5.0 by Albo1125 - MinRPH 0.51\API Reference - Developers Only\LSPDFR+.dll</HintPath>
     </Reference>
     <Reference Include="LtFlash.Common">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\LtFlash.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="PoliceSmartRadio">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\Plugins\LSPDFR\PoliceSmartRadio.dll</HintPath>
+      <HintPath>..\..\..\..\Development\LtFlash.Common.dll</HintPath>
     </Reference>
     <Reference Include="RAGENativeUI">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\RAGENativeUI.dll</HintPath>
+      <HintPath>..\..\..\..\Development\RAGENativeUI\RAGENativeUI.dll</HintPath>
     </Reference>
     <Reference Include="RagePluginHookSDK">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\SDK\RagePluginHookSDK.dll</HintPath>
+      <HintPath>..\..\..\..\Development\RAGEPluginHook_0_54_1128_11350_ALPHA\SDK\RagePluginHookSDK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -100,6 +94,7 @@
     <Compile Include="FalseCallHandler.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Objects\AmbientEvent.cs" />
+    <Compile Include="Objects\Animation.cs" />
     <Compile Include="Objects\PedType.cs" />
     <Compile Include="Objects\ScenarioHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

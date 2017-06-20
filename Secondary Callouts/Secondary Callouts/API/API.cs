@@ -100,4 +100,17 @@ namespace Secondary_Callouts.API
 
         public enum ResponseType { Code_2, Code_3 }
     }
+
+    public class LSPDFRPlusAPI
+    {
+        public static void AddCourtCase(List<Ped> pedList, string crime)
+        {
+            if (!PluginCheck.IsLSPDFRPlusRunning()) return;
+            foreach (var ped in pedList)
+            {
+                if (!ped) continue;
+                LSPDFR_.API.Functions.CreateNewCourtCase(LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(ped), crime, 75, LSPDFR_.API.Functions.DeterminePrisonSentence(6, 240, 30));
+            }
+        }
+    }
 }

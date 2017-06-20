@@ -8,6 +8,7 @@ namespace Secondary_Callouts.API
     {
         internal static bool IsComputerPlusRunning() => IsLspdfrPluginRunning("ComputerPlus", new Version("1.3.5.0"));
         internal static bool IsBetterEMSRunning() => IsLspdfrPluginRunning("BetterEMS", new Version("3.0.6298.2858"));
+        internal static bool IsLSPDFRPlusRunning() => IsLspdfrPluginRunning("LSPDFR+", new Version("1.6.5.0"));
 
         private static bool IsLspdfrPluginRunning(string plugin, Version minversion = null) => Functions.GetAllUserPlugins().Select(assembly => assembly.GetName()).Where(an => an.Name.ToLower() == plugin.ToLower()).Any(an => minversion == null || an.Version.CompareTo(minversion) >= 0);
     }
