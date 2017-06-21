@@ -60,6 +60,8 @@ namespace SecondaryCallouts
         private Guid _callId;
         private Stopwatch _sw = new Stopwatch();
         private bool _isAudioCompleted = false;
+
+        private List<GameFiber> _activeFibers = new List<GameFiber>();
         
         public override bool OnBeforeCalloutDisplayed()
         {
@@ -88,27 +90,35 @@ namespace SecondaryCallouts
 
         public override bool OnCalloutAccepted()
         {
-            "Callouit has been accepted".AddLog();
+            "Callout has been accepted".AddLog();
+
+            var fiber = new GameFiber(StartSecondaryAudio);
+            fiber.Start();
+            _activeFibers.Add(fiber);
+
             if (_computerPlus) ComputerPlusAPI.SetCalloutStatusToUnitResponding(_callId);
 
             if (!string.IsNullOrWhiteSpace(AcceptScannerAudio)) StartSecondaryAudio();
 
-//            if (FalseCall && Fiskey111Common.Rand.RandomNumber(1, 15) == 1)
-//            {
-//                "False Call".AddLog();
-//                _isFalseCall = true;
-//                FalseCallHandler.callState = FalseCallHandler.CallState.Start;
-//            }
+            //            if (FalseCall && Fiskey111Common.Rand.RandomNumber(1, 15) == 1)
+            //            {
+            //                "False Call".AddLog();
+            //                _isFalseCall = true;
+            //                FalseCallHandler.callState = FalseCallHandler.CallState.Start;
+            //            }
 
             //CalloutName.DisplayNotification(ResponseInfo);
 
             var position = SpawnPoint.Around2D(5f, 20f);
 
-            if (!SpawnBlip) return base.OnCalloutAccepted();
+            if (SpawnBlip)
+            {
+                AreaBlip = CalloutStandardization.CreateStandardizedBlip(position, BlipType, BlipScale);
+                AreaBlip.Alpha = BlipAlpha;
+                AreaBlip.EnableRoute(AreaBlip.Color);
+            }
 
-            AreaBlip = CalloutStandardization.CreateStandardizedBlip(position, BlipType, BlipScale);
-            AreaBlip.Alpha = BlipAlpha;
-            AreaBlip.EnableRoute(AreaBlip.Color);
+            "Returning OnCalloutAccepted".AddLog();
 
             return base.OnCalloutAccepted();
         }
@@ -132,7 +142,6 @@ namespace SecondaryCallouts
             }
 
             if (!_isFalseCall) return;
-            GameFiber.Sleep(0500);
             if (!FalseCallHandler.FalseCall(SpawnPoint, CalloutName)) return;
             CalloutFinished();
         }
@@ -142,33 +151,45 @@ namespace SecondaryCallouts
             "CalloutFinished()".AddLog();
             if (_computerPlus) ComputerPlusAPI.ConcludeCallout(_callId);
             DisplayEndInformation();
-            "Deleting blips".AddLog();
-            foreach (var blip in BlipList)
-                if (blip) blip.Delete();
-            if (AreaBlip.Exists()) AreaBlip.Delete();
 
+            var fiber = new GameFiber(DetectiveFiber);
+            fiber.Start();
+            _activeFibers.Add(fiber);
+        }
+
+        public override void End()
+        {
             "Dismissing peds".AddLog();
             PedList.Dismiss();
             CopVehList.Dismiss();
             CopPedList.Dismiss();
+            "Stopping fibers".AddLog();
+            foreach (var fiber in _activeFibers)
+                if (fiber.IsAlive) fiber.Abort();
+            "Deleting blips".AddLog();
+            foreach (var blip in BlipList)
+                if (blip) blip.Delete();
+            if (AreaBlip.Exists()) AreaBlip.Delete();
             "End".AddLog();
-            Game.DisplayHelp("To request ~b~detectives~w~, press ~y~Y~w~ in the next five seconds\nOtherwise, ignore this message", 5100);
+            base.End();
+        }
+
+        private void DetectiveFiber()
+        {
             var sw = new Stopwatch();
             sw.Start();
 
-            GameFiber.StartNew(delegate
+            Game.DisplayHelp("To request ~b~detectives~w~, press ~y~Y~w~ in the next five seconds\nOtherwise, ignore this message", 5100);
+            while (sw.Elapsed.Seconds < 5)
             {
-                while (sw.Elapsed.Seconds < 5)
-                {
-                    GameFiber.Yield();
+                GameFiber.Yield();
 
-                    if (!Game.IsKeyDown(Keys.Y)) continue;
-                    Game.LogTrivial("Key pressed");
-                    RequestDetectives();
-                    break;
-                }
-                Game.LogTrivial("Broken");
-            });
+                if (!Game.IsKeyDown(Keys.Y)) continue;
+                Game.LogTrivial("Key pressed");
+                RequestDetectives();
+                break;
+            }
+            Game.LogTrivial("Broken");
 
             this.End();
         }
@@ -340,23 +361,27 @@ namespace SecondaryCallouts
             if (pedList.Count < 1) return;
 
             StartedWeaponFireCheck = true;
+            
+            var fiber = new GameFiber(() => WeaponFireCheck(pedList));
+            fiber.Start();
+            _activeFibers.Add(fiber);
+        }
 
-            GameFiber.StartNew(delegate
+        private void WeaponFireCheck(List<Ped> pedList)
+        {
+            var hasAudioStarted = false;
+            while (!hasAudioStarted)
             {
-                bool hasAudioStarted = false;
-                while (!hasAudioStarted)
-                {
-                    GameFiber.Yield();
-                    if (!pedList.Any(p => p && p.IsShooting)) continue;
+                GameFiber.Yield();
+                if (!pedList.Any(p => p && p.IsShooting)) continue;
 
-                    if (Fiskey111Common.Rand.RandomNumber(3) == 1)
-                    {
-                        while (!_isAudioCompleted) GameFiber.Yield();
-                        Functions.PlayScannerAudio(ShotsFiredScannerAudio);
-                    }
-                    hasAudioStarted = true;
+                if (Fiskey111Common.Rand.RandomNumber(3) == 1)
+                {
+                    while (!_isAudioCompleted) GameFiber.Yield();
+                    Functions.PlayScannerAudio(ShotsFiredScannerAudio);
                 }
-            });
+                hasAudioStarted = true;
+            }
         }
 
         public string[] GetVehs()
@@ -409,14 +434,11 @@ namespace SecondaryCallouts
             _sw.Stop();
             var timeelapsed = Convert.ToInt32(_sw.Elapsed.TotalSeconds);
             $"Elapsed time: {timeelapsed}s".AddLog();
-            GameFiber.StartNew(delegate
-            {
-                GameFiber.Sleep(AudioTime - timeelapsed);
-                Functions.PlayScannerAudio(AcceptScannerAudio);
-                GameFiber.Sleep(8000);
-                "Audio completed".AddLog();
-                _isAudioCompleted = true;
-            });
+            GameFiber.Sleep(AudioTime - timeelapsed);
+            Functions.PlayScannerAudio(AcceptScannerAudio);
+            GameFiber.Sleep(8000);
+            "Audio completed".AddLog();
+            _isAudioCompleted = true;
         }
 
         public void AddPedList(List<Ped> pedList, PedType.Type type)
