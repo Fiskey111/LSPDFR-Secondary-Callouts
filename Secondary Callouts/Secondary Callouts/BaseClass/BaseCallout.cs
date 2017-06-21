@@ -261,32 +261,7 @@ namespace SecondaryCallouts
         {
             if (!ped) return;
 
-            var random = forceWeapons
-                ? Fiskey111Common.Rand.RandomNumber(1, 6)
-                : Fiskey111Common.Rand.RandomNumber(1, Settings.GunFireChance);
-
-            WeaponAsset weapon;
-            switch (random)
-            {
-                case 1:
-                    weapon = new WeaponAsset((uint) WeaponHash.Bat);
-                    break;
-                case 2:
-                    weapon = new WeaponAsset((uint)WeaponHash.Pistol);
-                    break;
-                case 3:
-                    weapon = new WeaponAsset((uint)WeaponHash.PumpShotgun);
-                    break;
-                case 4:
-                    weapon = new WeaponAsset((uint)WeaponHash.AssaultRifle);
-                    break;
-                case 5:
-                    ped.Armor = Fiskey111Common.Rand.RandomNumber(25, 101);
-                    break;
-            }
-            if (random > 4) return;
-            var gun = new Weapon(weapon, SpawnPoint, 400);
-            gun.GiveTo(ped);
+            EntityMethods.GiveFirearms(ped, SpawnPoint, forceWeapons);
         }
 
         public void GiveWeaponOrArmor(List<Ped> pedList)
@@ -319,7 +294,7 @@ namespace SecondaryCallouts
         {
             var list = pedList.ToList();
             
-            if (list.Count < 1) return list;
+            if (list.Count < 1 || !Settings.AllowEscapeSuspect) return list;
 
             for (var index = list.Count - 1; index >= 0; index--)
             {

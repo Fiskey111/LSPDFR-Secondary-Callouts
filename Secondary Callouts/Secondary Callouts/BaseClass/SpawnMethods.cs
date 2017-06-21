@@ -6,7 +6,7 @@ using Secondary_Callouts.ExtensionMethods;
 using Secondary_Callouts.Objects;
 
 namespace Secondary_Callouts.BaseClass
-{
+{ 
     internal class SpawnMethods
     {
         internal static List<Ped> SpawnPeds(Vector3 spawnPoint, string model, int number, float around1, float around2, float heading)
