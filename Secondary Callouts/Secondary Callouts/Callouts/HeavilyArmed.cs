@@ -223,16 +223,6 @@ namespace Secondary_Callouts.Callouts
             }
         }
 
-        private void SetRelationshipGroups(IEnumerable<Ped> pedList, string relGroup)
-        {
-            foreach (var ped in pedList)
-            {
-                if (!ped) continue;
-
-                ped.RelationshipGroup = relGroup;
-            }
-        }
-
         private void SetRelationships(IEnumerable<Ped> pedList1, IEnumerable<Ped> pedList2,
             Relationship groupRelationship = Relationship.Hate)
         {
@@ -251,7 +241,5 @@ namespace Secondary_Callouts.Callouts
                     groupRelationship);
             }
         }
-
-        private void SetPlayerRelationships(IEnumerable<Ped> pedList2, Relationship groupRelationship = Relationship.Hate) => Game.SetRelationshipBetweenRelationshipGroups(Game.LocalPlayer.Character.RelationshipGroup, pedList2.FirstOrDefault().RelationshipGroup, groupRelationship);
     }
 }

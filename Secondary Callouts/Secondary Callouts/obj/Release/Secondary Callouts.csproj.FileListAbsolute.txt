@@ -1,0 +1,18 @@
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\obj\Release\Secondary Callouts.csprojResolveAssemblyReference.cache
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Release\Secondary Callouts.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Release\Secondary Callouts.pdb
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Release\BetterEMS.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Release\ComputerPlus.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Release\Fiskey111Common.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Release\LSPD First Response.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Release\LSPDFR+.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Release\LtFlash.Common.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Release\PoliceSmartRadio.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Release\RAGENativeUI.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Release\RagePluginHookSDK.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Release\LMS.Common.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Release\ComputerPlus.pdb
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Release\LSPD First Response.pdb
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Release\RagePluginHookSDK.xml
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\obj\Release\Secondary Callouts.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\obj\Release\Secondary Callouts.pdb

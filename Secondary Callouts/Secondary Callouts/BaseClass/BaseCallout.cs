@@ -52,6 +52,8 @@ namespace SecondaryCallouts
         public LHandle PursuitHandler;
         public bool IsPursuit;
 
+        public int AudioTime = 6000;
+
         public List<PedType> FinalPedList = new List<PedType>();
 
         private bool _computerPlus, _isFalseCall;
@@ -86,16 +88,17 @@ namespace SecondaryCallouts
 
         public override bool OnCalloutAccepted()
         {
+            "Callouit has been accepted".AddLog();
             if (_computerPlus) ComputerPlusAPI.SetCalloutStatusToUnitResponding(_callId);
 
             if (!string.IsNullOrWhiteSpace(AcceptScannerAudio)) StartSecondaryAudio();
 
-            if (FalseCall && Fiskey111Common.Rand.RandomNumber(1, 15) == 1)
-            {
-                "False Call".AddLog();
-                _isFalseCall = true;
-                FalseCallHandler.callState = FalseCallHandler.CallState.Start;
-            }
+//            if (FalseCall && Fiskey111Common.Rand.RandomNumber(1, 15) == 1)
+//            {
+//                "False Call".AddLog();
+//                _isFalseCall = true;
+//                FalseCallHandler.callState = FalseCallHandler.CallState.Start;
+//            }
 
             //CalloutName.DisplayNotification(ResponseInfo);
 
@@ -114,12 +117,19 @@ namespace SecondaryCallouts
         {
             base.OnCalloutNotAccepted();
             if (_computerPlus) ComputerPlusAPI.AssignCallToAIUnit(_callId);
-            Functions.PlayScannerAudio("OFFICER_INTRO_01 UNIT_RESPONDING_DISPATCH_04");
+            if (Settings.AiAudio) Functions.PlayScannerAudio("OFFICER_INTRO_01 UNIT_RESPONDING_DISPATCH_04");
         }
 
         public override void Process()
         {
             base.Process();
+
+            if (Game.IsKeyDown(Keys.End))
+            {
+                "Forcing callout end".AddLog(true);
+
+                this.CalloutFinished();
+            }
 
             if (!_isFalseCall) return;
             GameFiber.Sleep(0500);
@@ -150,14 +160,14 @@ namespace SecondaryCallouts
             {
                 while (sw.Elapsed.Seconds < 5)
                 {
-                    if (Game.IsKeyDown(Keys.Y))
-                    {
-                        RequestDetectives();
-                        break;
-                    }
-
                     GameFiber.Yield();
+
+                    if (!Game.IsKeyDown(Keys.Y)) continue;
+                    Game.LogTrivial("Key pressed");
+                    RequestDetectives();
+                    break;
                 }
+                Game.LogTrivial("Broken");
             });
 
             this.End();
@@ -195,17 +205,7 @@ namespace SecondaryCallouts
         public List<Ped> SpawnPeds(int number = 1, float around1 = 5f, float around2 = 9f)
         {
             var list = SpawnMethods.SpawnPeds(SpawnPoint, null, number, around1, around2, 0f);
-#if DEBUG
-            foreach (var ped in list)
-            {
-                var blip = new Blip(ped)
-                {
-                    Color = Color.Magenta,
-                    Scale = 0.25f
-                };
-                BlipList.Add(blip);
-            }
-#endif
+
             $"Total peds created: {list.Count}".AddLog();
             return list;
         }
@@ -213,17 +213,7 @@ namespace SecondaryCallouts
         public List<Ped> SpawnPeds(string model, int number = 1, float around1 = 5f, float around2 = 9f, float heading = 0f)
         {
             var list = SpawnMethods.SpawnPeds(SpawnPoint, model, number, around1, around2, heading);
-#if DEBUG
-            foreach (var ped in list)
-            {
-                var blip = new Blip(ped)
-                {
-                    Color = Color.Magenta,
-                    Scale = 0.25f
-                };
-                BlipList.Add(blip);
-            }
-#endif
+
             $"Total peds created: {list.Count}".AddLog();
             return list;
         }
@@ -237,17 +227,7 @@ namespace SecondaryCallouts
             CopPedList = SpawnMethods.SpawnCops(position, number, isBusy, kill, out List<PedType> outList);
 
             FinalPedList.AddRange(outList);
-#if DEBUG
-            foreach (var ped in CopPedList)
-            {
-                var blip = new Blip(ped)
-                {
-                    Color = Color.Aqua,
-                    Scale = 0.25f
-                };
-                BlipList.Add(blip);
-            }
-#endif
+
             var vehs = GetVehs();
             if (withVehs)
             {
@@ -283,7 +263,7 @@ namespace SecondaryCallouts
 
             var random = forceWeapons
                 ? Fiskey111Common.Rand.RandomNumber(1, 6)
-                : Fiskey111Common.Rand.RandomNumber(1, 13);
+                : Fiskey111Common.Rand.RandomNumber(1, Settings.GunFireChance);
 
             WeaponAsset weapon;
             switch (random)
@@ -431,7 +411,7 @@ namespace SecondaryCallouts
             $"Elapsed time: {timeelapsed}s".AddLog();
             GameFiber.StartNew(delegate
             {
-                GameFiber.Sleep(6000 - timeelapsed);
+                GameFiber.Sleep(AudioTime - timeelapsed);
                 Functions.PlayScannerAudio(AcceptScannerAudio);
                 GameFiber.Sleep(8000);
                 "Audio completed".AddLog();
@@ -483,6 +463,20 @@ namespace SecondaryCallouts
             return true;
         }
 
+        public void SetRelationshipGroups(IEnumerable<Ped> pedList, string relGroup)
+        {
+            foreach (var ped in pedList)
+            {
+                if (!ped) continue;
+
+                ped.RelationshipGroup = relGroup;
+            }
+        }
+
+        public void SetRelationshipsHate(IEnumerable<Ped> pedList1, IEnumerable<Ped> pedList2, Relationship groupRelationship = Relationship.Hate) => Game.SetRelationshipBetweenRelationshipGroups(pedList1.FirstOrDefault().RelationshipGroup, pedList2.FirstOrDefault().RelationshipGroup, groupRelationship);
+        public void SetPlayerRelationships(IEnumerable<Ped> pedList2, Relationship groupRelationship = Relationship.Hate) => Game.SetRelationshipBetweenRelationshipGroups(Game.LocalPlayer.Character.RelationshipGroup, pedList2.FirstOrDefault().RelationshipGroup, groupRelationship);
+
+
         public void GiveCourtCase(List<Ped> pedList, string crimes)
         {
             if (!PluginCheck.IsLSPDFRPlusRunning()) return;
@@ -492,8 +486,9 @@ namespace SecondaryCallouts
 
         public void RequestDetectives()
         {
+            Game.LogTrivial("Requesting detectives");
             var detective = new Detective(SpawnPoint, DetectiveQuestions.GetOptions());
-            detective.Dispatch(20f);
+            detective.Dispatch();
         }
 
         public enum EState { Accepted, EnRoute, DecisionMade, OnScene, Checking }
@@ -517,10 +512,10 @@ namespace SecondaryCallouts
             var array = new List<Option>();
             for (var i = 0; i < numberOfSuspects; i++)
             {
-                array.Add(new Option($"{i} suspects", "Alright, thank you", $"There were {i} suspects"));
+                array.Add(new Option($"{i} suspects", "[~b~Detective~w~]: Alright, thank you.", $"[~y~{Fiskey111Common.OfficerSettings.OfficerName()}~w~]: There were {i} suspects."));
             }
 
-            return new MultipleOptionLine("How many suspects were there?", array);
+            return new MultipleOptionLine("[~b~Detective~w~]: How many suspects were there?", array);
         }
 
         internal static MultipleOptionLine HowManyDead(int numberDead)
@@ -528,36 +523,36 @@ namespace SecondaryCallouts
             var array = new List<Option>();
             for (var i = 0; i < numberDead; i++)
             {
-                array.Add(new Option($"{i} dead", $"Alrighty, so {i} died", $"A total of {i} died"));
+                array.Add(new Option($"{i} dead", $"[~b~Detective~w~]: {i} died, good to know.", $"[~y~{Fiskey111Common.OfficerSettings.OfficerName()}~w~]: A total of {i} died."));
             }
 
-            return new MultipleOptionLine("How many individuals are dead?", array);
+            return new MultipleOptionLine("[~b~Detective~w~]: How many individuals are dead?", array);
         }
 
         internal static MultipleOptionLine WhyDidYouArrive()
         {
             var array = new List<Option>
             {
-                new Option($"Callout", "So you were dispatched, okay", $"I arrived because I was dispatched here"),
-                new Option($"Patrolling", "Okay, so you patrol around here", $"I was patrolling in the area nearby"),
-                new Option($"No reason", "That's interesting, we'll talk more at the station", $"I don't really have a reason, I just arrived")
+                new Option($"Callout", "[~b~Detective~w~]: Sounds good; I'll confirm that with dispatch.", $"[~y~{Fiskey111Common.OfficerSettings.OfficerName()}~w~]: I arrived because I was dispatched here"),
+                new Option($"Patrolling", "[~b~Detective~w~]: Okay, well I'll check your GPS to confirm that.", $"[~y~{Fiskey111Common.OfficerSettings.OfficerName()}~w~]: I was patrolling in the area nearby"),
+                new Option($"No reason", "[~b~Detective~w~]: That's interesting, we'll talk more at the station", $"[~y~{Fiskey111Common.OfficerSettings.OfficerName()}~w~]: I don't really have a reason, I just arrived")
             };
             
-            return new MultipleOptionLine("What made you arrive on scene?", array);
+            return new MultipleOptionLine("[~b~Detective~w~]: What made you arrive on scene?", array);
         }
 
         internal static MultipleOptionLine HowDidThesePeopleDie()
         {
             var array = new List<Option>
             {
-                new Option($"Nobody died", "Alright, good", $"Nobody is dead at the scene"),
-                new Option($"Gunshot wounds", "Alright, good to know", $"They died from gunshot wounds"),
-                new Option($"Physical altercation", "Interesting to know", $"They died from physical trauma like being beaten"),
-                new Option($"Taser", "Did you have your taser set to over 9000? Jeez.", $"They died from taser deployment"),
-                new Option($"Other", "Okay, that's interesting...", $"They died from another method")
+                new Option($"Nobody died", "[~b~Detective~w~]: Phew, thank goodness.", $"[~y~{Fiskey111Common.OfficerSettings.OfficerName()}~w~]: Nobody is dead at the scene"),
+                new Option($"Gunshot wounds", "[~b~Detective~w~]: Alright, good to know", $"[~y~{Fiskey111Common.OfficerSettings.OfficerName()}~w~]: They died from gunshot wounds"),
+                new Option($"Physical altercation", "[~b~Detective~w~]: Interesting to know", $"[~y~{Fiskey111Common.OfficerSettings.OfficerName()}~w~]: They died from physical trauma like being beaten"),
+                new Option($"Taser", "[~b~Detective~w~]: Did you have your taser set to over 9000? Jeez.", $"[~y~{Fiskey111Common.OfficerSettings.OfficerName()}~w~]: They died from taser deployment"),
+                new Option($"Other", "[~b~Detective~w~]: Okay, that's interesting...", $"[~y~{Fiskey111Common.OfficerSettings.OfficerName()}~w~]: They died from another method")
             };
 
-            return new MultipleOptionLine("How did these people die?", array);
+            return new MultipleOptionLine("[~b~Detective~w~]: How did these people die?", array);
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using LSPD_First_Response.Mod.API;
 using LSPD_First_Response.Mod.Callouts;
@@ -29,6 +31,24 @@ namespace Secondary_Callouts.Callouts
 
         public override bool OnBeforeCalloutDisplayed()
         {
+            var isAllowed = false;
+#if DEBUG
+            isAllowed = true;
+#endif
+            if (!isAllowed)
+            {
+                Game.DisplaySubtitle("~r~This isn't ready yet. Try again some other day.~w~ -Fiskey111");
+                Game.RawFrameRender += Game_RawFrameRender;
+                GameFiber.StartNew(delegate
+                {
+                    var sw = new Stopwatch();
+                    sw.Start();
+                    while (sw.Elapsed.Seconds < 5)
+                        GameFiber.Yield();
+                    Game.RawFrameRender -= Game_RawFrameRender; 
+                });
+            }
+
             CalloutName = CallName;
             CalloutMessage = CalloutMsg;
 
@@ -38,6 +58,11 @@ namespace Secondary_Callouts.Callouts
             ComputerPlus_CallMsg = $"Officer down near {World.GetStreetName(SpawnPoint)}. Suspect at large.";
 
             return base.OnBeforeCalloutDisplayed();
+        }
+
+        private void Game_RawFrameRender(object sender, GraphicsEventArgs e)
+        {
+            e.Graphics.DrawTexture(Game.CreateTextureFromFile(@"Plugins\LSPDFR\Secondary Callouts\Secret\secret.jpg"), new RectangleF(500f, 200f, 400f, 400f));
         }
 
         public override bool OnCalloutAccepted()

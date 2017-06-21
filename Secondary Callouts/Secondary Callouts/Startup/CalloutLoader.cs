@@ -19,6 +19,7 @@ namespace Secondary_Callouts.Startup
             RegisterCallout(typeof(HeavilyArmed));
             RegisterCallout(typeof(KnifeAttack));
             RegisterCallout(typeof(ShotsOnOfficer));
+            //RegisterCallout(typeof(OfficerShot));
 
             $"{_calloutNumber} high-quality callouts loaded!".AddLog(true);
         }

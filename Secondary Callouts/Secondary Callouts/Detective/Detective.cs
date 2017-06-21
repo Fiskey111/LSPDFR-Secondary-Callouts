@@ -68,6 +68,7 @@ namespace Secondary_Callouts.Detective
 
         private void ExitVehicleAndGoToPos()
         {
+            if (DetectiveBlip) DetectiveBlip.Delete();
             DetectivePed.Tasks.LeaveVehicle(DetectiveVeh, LeaveVehicleFlags.None);
             while (DetectivePed.IsGettingIntoVehicle)
                 GameFiber.Yield();
@@ -110,23 +111,13 @@ namespace Secondary_Callouts.Detective
         private void AwaitFinish()
         {
             while (!Conversation.HasEnded)
-            {
-                if (!_scenario.IsRunning) _scenario.StartNonLooped();
                 GameFiber.Yield();
-            }
 
-            _scenario.Stop();
+            _scenario = new ScenarioHelper(DetectivePed, ScenarioHelper.Scenario.CODE_HUMAN_POLICE_INVESTIGATE);
+            _scenario.StartLooped();
 
-            GameFiber.Sleep(3000);
-
-            DetectivePed.Tasks.EnterVehicle(DetectiveVeh, -1);
-
-            while (!DetectivePed.IsInVehicle(DetectiveVeh, false)) GameFiber.Yield();
-
-            DetectivePed.Tasks.CruiseWithVehicle(40f);
-
-            GameFiber.Sleep(5000);
-
+            while (Game.LocalPlayer.Character.Position.DistanceTo(DetectivePed) < 30f) GameFiber.Yield();
+            
             this.End();
         }
 

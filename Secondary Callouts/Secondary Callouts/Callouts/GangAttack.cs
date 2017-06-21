@@ -248,24 +248,5 @@ namespace Secondary_Callouts.Callouts
         }
 
         private enum GangType { Ballas, Lost }
-
-        private void SetRelationshipGroups(IEnumerable<Ped> pedList, string relGroup)
-        {
-            foreach (var ped in pedList)
-            {
-                if (!ped) continue;
-
-                ped.RelationshipGroup = relGroup;
-            }
-        }
-
-        private void SetRelationshipsHate(List<Ped> pedList1, List<Ped> pedList2, Relationship groupRelationship = Relationship.Hate)
-        {
-            $"Giving {pedList1.FirstOrDefault().RelationshipGroup.Name} {groupRelationship} towards {pedList2.FirstOrDefault().RelationshipGroup.Name}".AddLog();
-            Game.SetRelationshipBetweenRelationshipGroups(pedList1.FirstOrDefault().RelationshipGroup,
-                pedList2.FirstOrDefault().RelationshipGroup, groupRelationship);
-        }
-
-        private void SetPlayerRelationships(IEnumerable<Ped> pedList2, Relationship groupRelationship = Relationship.Hate) => Game.SetRelationshipBetweenRelationshipGroups(Game.LocalPlayer.Character.RelationshipGroup, pedList2.FirstOrDefault().RelationshipGroup, groupRelationship);
-    }
+   }
 }

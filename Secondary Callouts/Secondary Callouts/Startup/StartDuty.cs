@@ -17,7 +17,7 @@ namespace Secondary_Callouts.Startup
                 
                 AmbientHandler.StartAmbientEvents();
                 
-                if (Settings.StartingAudio()) Functions.PlayScannerAudio($"ATTN_UNIT {Settings.UnitName} BEGIN_BEAT");
+                if (Settings.StartingAudio) Functions.PlayScannerAudio($"ATTN_UNIT {Settings.UnitName} BEGIN_BEAT");
 
                 Detective.DetectiveMenu.Main();
 

@@ -85,9 +85,7 @@ namespace Secondary_Callouts.Callouts
 
                     CalloutEState = EState.EnRoute;
                     if (ComputerPlus_Active) ComputerPlusAPI.SetCalloutStatusToAtScene(ComputerPlus_GUID);
-
-                    CommonMethods.DisplayMenuHelp();
-
+                    
                     SetRelationshipGroups(PedList, "Fiskey111Perps");
                     SetRelationshipGroups(_emsList, "Fiskey111EMS");
 
@@ -131,23 +129,6 @@ namespace Secondary_Callouts.Callouts
 
             _ambulance.Dismiss();
         }
-
-
-        private void SetRelationshipGroups(IEnumerable<Ped> pedList, string relGroup)
-        {
-            var enumerable = pedList as Ped[] ?? pedList.ToArray();
-            if (enumerable.Length < 1) return;
-
-            foreach (var ped in enumerable)
-            {
-                if (!ped) continue;
-
-                ped.RelationshipGroup = relGroup;
-            }
-        }
-
-        private void SetRelationshipsHate(IEnumerable<Ped> pedList1, IEnumerable<Ped> pedList2, Relationship groupRelationship = Relationship.Hate) => Game.SetRelationshipBetweenRelationshipGroups(pedList1.FirstOrDefault().RelationshipGroup, pedList2.FirstOrDefault().RelationshipGroup, groupRelationship);
-        private void SetPlayerRelationships(IEnumerable<Ped> pedList2, Relationship groupRelationship = Relationship.Hate) => Game.SetRelationshipBetweenRelationshipGroups(Game.LocalPlayer.Character.RelationshipGroup, pedList2.FirstOrDefault().RelationshipGroup, groupRelationship);
 
         private void StartPursuit()
         {
