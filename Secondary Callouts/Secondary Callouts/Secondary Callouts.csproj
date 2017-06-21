@@ -32,28 +32,31 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BetterEMS">
-      <HintPath>..\..\..\..\Development\BetterEMS_by_PNWParksFan_3.0\GTA V folder\Plugins\LSPDFR\BetterEMS.dll</HintPath>
+      <HintPath>bin\BetterEMS.dll</HintPath>
     </Reference>
     <Reference Include="ComputerPlus">
-      <HintPath>..\..\..\..\Development\ComputerPlus_1.3.5.2_tag_8fb5eb0\Packaged\Plugins\LSPDFR\ComputerPlus.dll</HintPath>
+      <HintPath>bin\ComputerPlus.dll</HintPath>
     </Reference>
     <Reference Include="Fiskey111Common">
-      <HintPath>..\..\..\..\Development\L.S.+Noir+v0.418.17.0\L.S. Noir v0.418.17.0\Grand Theft Auto V\Fiskey111Common.dll</HintPath>
+      <HintPath>bin\Fiskey111Common.dll</HintPath>
     </Reference>
     <Reference Include="LSPD First Response">
-      <HintPath>..\..\..\..\Development\LSPDFR 031 Manual Install\plugins\LSPD First Response.dll</HintPath>
+      <HintPath>bin\LSPD First Response.dll</HintPath>
     </Reference>
     <Reference Include="LSPDFR+">
-      <HintPath>..\..\..\..\Development\LSPDFR_ 1.6.5.0 by Albo1125 _ MinRPH 0.51\LSPDFR+ 1.6.5.0 by Albo1125 - MinRPH 0.51\API Reference - Developers Only\LSPDFR+.dll</HintPath>
+      <HintPath>bin\LSPDFR+.dll</HintPath>
     </Reference>
     <Reference Include="LtFlash.Common">
-      <HintPath>..\..\..\..\Development\LtFlash.Common.dll</HintPath>
+      <HintPath>bin\LtFlash.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="PoliceSmartRadio">
+      <HintPath>bin\PoliceSmartRadio.dll</HintPath>
     </Reference>
     <Reference Include="RAGENativeUI">
-      <HintPath>..\..\..\..\Development\RAGENativeUI\RAGENativeUI.dll</HintPath>
+      <HintPath>bin\RAGENativeUI.dll</HintPath>
     </Reference>
     <Reference Include="RagePluginHookSDK">
-      <HintPath>..\..\..\..\Development\RAGEPluginHook_0_54_1128_11350_ALPHA\SDK\RagePluginHookSDK.dll</HintPath>
+      <HintPath>bin\RagePluginHookSDK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

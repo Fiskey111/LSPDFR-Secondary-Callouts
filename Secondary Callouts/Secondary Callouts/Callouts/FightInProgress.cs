@@ -72,9 +72,7 @@ namespace Secondary_Callouts.Callouts
 
                     CalloutEState = EState.DecisionMade;
                     if (ComputerPlus_Active) ComputerPlusAPI.SetCalloutStatusToAtScene(ComputerPlus_GUID);
-
-                    CommonMethods.DisplayMenuHelp();
-
+                    
                     SetRelationshipGroups();
 
                     SetRelationshipsHate();

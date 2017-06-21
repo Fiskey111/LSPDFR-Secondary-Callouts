@@ -73,9 +73,7 @@ namespace Secondary_Callouts.Callouts
 
                     CalloutEState = EState.DecisionMade;
                     if (ComputerPlus_Active) ComputerPlusAPI.SetCalloutStatusToAtScene(ComputerPlus_GUID);
-
-                    CommonMethods.DisplayMenuHelp();
-
+                    
                     GiveKnifeOrWeapon(PedList);
 
                     SetRelationshipGroups(PedList, "Fiskey111Perps");
@@ -140,20 +138,6 @@ namespace Secondary_Callouts.Callouts
                 gun1.GiveTo(ped);
             }
         }
-
-        private void SetRelationshipGroups(IEnumerable<Ped> pedList, string relGroup)
-        {
-            foreach (var ped in pedList)
-            {
-                if (!ped) continue;
-
-                ped.RelationshipGroup = relGroup;
-            }
-        }
-
-        private void SetRelationshipsHate(IEnumerable<Ped> pedList1, IEnumerable<Ped> pedList2, Relationship groupRelationship = Relationship.Hate) => Game.SetRelationshipBetweenRelationshipGroups(pedList1.FirstOrDefault().RelationshipGroup, pedList2.FirstOrDefault().RelationshipGroup, groupRelationship);
-        private void SetPlayerRelationships(IEnumerable<Ped> pedList2, Relationship groupRelationship = Relationship.Hate) => Game.SetRelationshipBetweenRelationshipGroups(Game.LocalPlayer.Character.RelationshipGroup, pedList2.FirstOrDefault().RelationshipGroup, groupRelationship);
-
         private void StartPursuit()
         {
             if (Fiskey111Common.Rand.RandomNumber(1, 5) != 1) return;

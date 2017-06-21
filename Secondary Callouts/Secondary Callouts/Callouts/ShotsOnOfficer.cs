@@ -27,10 +27,12 @@ namespace Secondary_Callouts.Callouts
             CalloutName = CallName;
             CalloutMessage = CalloutMsg;
 
-            if (Settings.ShotsFiredCallAudio()) _startScanner = $"SHOTS BEEP_LONG BEEP_LONG BEEP_LONG REQUEST_BACKUP STATIC ATTN_UNIT_02 {Settings.UnitName} CRIME_SHOTS_FIRED_AT_AN_OFFICER";
+            if (Settings.ShotsFiredCallAudio) _startScanner = $"SHOTS BEEP_LONG BEEP_LONG BEEP_LONG REQUEST_BACKUP STATIC ATTN_UNIT_02 {Settings.UnitName} CRIME_SHOTS_FIRED_AT_AN_OFFICER";
 
             GiveBlipInfo(CalloutStandardization.BlipTypes.Officers, 0.75f);
             StartScannerAudio = _startScanner;
+
+            AudioTime = 10000;
 
             ComputerPlus_CallMsg = $"Shots fired on officers reported near {World.GetStreetName(SpawnPoint)}. Officers on scene.";
 
@@ -127,22 +129,6 @@ namespace Secondary_Callouts.Callouts
                 }
             }
         }
-
-        private void SetRelationshipGroups(IEnumerable<Ped> pedList, string relGroup)
-        {
-            var enumerable = pedList as Ped[] ?? pedList.ToArray();
-            if (enumerable.Length < 1) return;
-
-            foreach (var ped in enumerable)
-            {
-                if (!ped) continue;
-
-                ped.RelationshipGroup = relGroup;
-            }
-        }
-
-        private void SetRelationshipsHate(IEnumerable<Ped> pedList1, IEnumerable<Ped> pedList2, Relationship groupRelationship = Relationship.Hate) => Game.SetRelationshipBetweenRelationshipGroups(pedList1.FirstOrDefault().RelationshipGroup, pedList2.FirstOrDefault().RelationshipGroup, groupRelationship);
-        private void SetPlayerRelationships(IEnumerable<Ped> pedList2, Relationship groupRelationship = Relationship.Hate) => Game.SetRelationshipBetweenRelationshipGroups(Game.LocalPlayer.Character.RelationshipGroup, pedList2.FirstOrDefault().RelationshipGroup, groupRelationship);
 
         private void GiveFightTask(IEnumerable<Ped> pedList)
         {

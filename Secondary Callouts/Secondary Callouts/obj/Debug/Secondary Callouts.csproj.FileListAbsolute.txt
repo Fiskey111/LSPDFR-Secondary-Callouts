@@ -12,3 +12,7 @@ C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\S
 C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\LtFlash.Common.dll
 C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\RagePluginHookSDK.dll
 C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\RAGENativeUI.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\BetterEMS.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\ComputerPlus.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\LSPDFR+.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\PoliceSmartRadio.dll

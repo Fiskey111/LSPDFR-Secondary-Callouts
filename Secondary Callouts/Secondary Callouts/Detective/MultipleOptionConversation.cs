@@ -109,7 +109,7 @@ namespace Secondary_Callouts.Detective
 
         private void End()
         {
-            Game.LogTrivial("End()");
+            DisplayLine("[~b~Detective~w~]: You can finish cleaning up the scene or leave, I've got all I need now.", DetectivePed);
             HasEnded = true;
             IsRunning = false;
             DetectivePed.IsInvincible = false;
