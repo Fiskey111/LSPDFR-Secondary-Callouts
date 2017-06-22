@@ -213,7 +213,7 @@ namespace SecondaryCallouts
             CalloutName.DisplayNotification($"~g~Code 4~w~, good work officer!");
         }
 
-
+        
         // SUPPORTING METHODS
 
         public void GiveBlipInfo(CalloutStandardization.BlipTypes blipType, float alpha = 1.0f, CalloutStandardization.BlipScale blipScale = CalloutStandardization.BlipScale.SearchArea)
@@ -282,32 +282,7 @@ namespace SecondaryCallouts
         {
             if (!ped) return;
 
-            var random = forceWeapons
-                ? Fiskey111Common.Rand.RandomNumber(1, 6)
-                : Fiskey111Common.Rand.RandomNumber(1, Settings.GunFireChance);
-
-            WeaponAsset weapon;
-            switch (random)
-            {
-                case 1:
-                    weapon = new WeaponAsset((uint) WeaponHash.Bat);
-                    break;
-                case 2:
-                    weapon = new WeaponAsset((uint)WeaponHash.Pistol);
-                    break;
-                case 3:
-                    weapon = new WeaponAsset((uint)WeaponHash.PumpShotgun);
-                    break;
-                case 4:
-                    weapon = new WeaponAsset((uint)WeaponHash.AssaultRifle);
-                    break;
-                case 5:
-                    ped.Armor = Fiskey111Common.Rand.RandomNumber(25, 101);
-                    break;
-            }
-            if (random > 4) return;
-            var gun = new Weapon(weapon, SpawnPoint, 400);
-            gun.GiveTo(ped);
+            EntityMethods.GiveFirearms(ped, SpawnPoint, forceWeapons);
         }
 
         public void GiveWeaponOrArmor(List<Ped> pedList)
@@ -333,14 +308,14 @@ namespace SecondaryCallouts
             }
         }
 
-        public bool IsPursuitCompleted() => IsPursuit && Functions.IsPursuitStillRunning(PursuitHandler);
+        public bool IsPursuitCompleted => IsPursuit && Functions.IsPursuitStillRunning(PursuitHandler);
         public bool IsPedInPursuit(Ped ped) => IsPursuit && Functions.GetPursuitPeds(PursuitHandler).Any(p => p == ped);
 
         public List<Ped> SuspectPositionCheck(List<Ped> pedList)
         {
             var list = pedList.ToList();
             
-            if (list.Count < 1) return list;
+            if (list.Count < 1 || !Settings.AllowEscapeSuspect) return list;
 
             for (var index = list.Count - 1; index >= 0; index--)
             {

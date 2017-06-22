@@ -23,5 +23,7 @@ namespace Secondary_Callouts
         public static bool ShotsFiredCallAudio => InitializeIni().ReadBoolean("Options", "ShotsFiredAudio", true);
 
         public static int GunFireChance => InitializeIni().ReadInt32("Options", "ChanceOfFirearms", 13);
+
+        public static bool AllowEscapeSuspect => InitializeIni().ReadBoolean("Options", "AllowSuspectEscape", true);
     }
 }

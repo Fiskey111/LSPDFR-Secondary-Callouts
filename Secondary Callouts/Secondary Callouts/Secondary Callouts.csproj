@@ -32,31 +32,28 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BetterEMS">
-      <HintPath>bin\BetterEMS.dll</HintPath>
+      <HintPath>..\..\..\..\Development\BetterEMS.dll</HintPath>
     </Reference>
     <Reference Include="ComputerPlus">
-      <HintPath>bin\ComputerPlus.dll</HintPath>
+      <HintPath>..\..\..\..\Development\ComputerPlus.dll</HintPath>
     </Reference>
     <Reference Include="Fiskey111Common">
-      <HintPath>bin\Fiskey111Common.dll</HintPath>
+      <HintPath>..\..\..\..\Development\Fiskey111Common.dll</HintPath>
     </Reference>
     <Reference Include="LSPD First Response">
-      <HintPath>bin\LSPD First Response.dll</HintPath>
+      <HintPath>..\..\..\..\Development\LSPD First Response.dll</HintPath>
     </Reference>
     <Reference Include="LSPDFR+">
-      <HintPath>bin\LSPDFR+.dll</HintPath>
+      <HintPath>..\..\..\..\Development\LSPDFR+.dll</HintPath>
     </Reference>
     <Reference Include="LtFlash.Common">
-      <HintPath>bin\LtFlash.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="PoliceSmartRadio">
-      <HintPath>bin\PoliceSmartRadio.dll</HintPath>
+      <HintPath>..\..\..\..\Development\LtFlash.Common.dll</HintPath>
     </Reference>
     <Reference Include="RAGENativeUI">
-      <HintPath>bin\RAGENativeUI.dll</HintPath>
+      <HintPath>..\..\..\..\Development\RAGENativeUI.dll</HintPath>
     </Reference>
     <Reference Include="RagePluginHookSDK">
-      <HintPath>bin\RagePluginHookSDK.dll</HintPath>
+      <HintPath>..\..\..\..\Development\RagePluginHookSDK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -84,7 +81,9 @@
     <Compile Include="Callouts\KnifeAttack.cs" />
     <Compile Include="Callouts\OfficerShot.cs" />
     <Compile Include="Callouts\ShotsOnOfficer.cs" />
+    <Compile Include="Commands.cs" />
     <Compile Include="CommonMethods.cs" />
+    <Compile Include="DEBUG\TestCallout.cs" />
     <Compile Include="Detective\MultipleOptionConversation.cs" />
     <Compile Include="Detective\MultipleOptionLine.cs" />
     <Compile Include="Detective\Detective.cs" />
