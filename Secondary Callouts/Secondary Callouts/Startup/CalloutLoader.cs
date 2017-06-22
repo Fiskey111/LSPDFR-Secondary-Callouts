@@ -29,7 +29,7 @@ namespace Secondary_Callouts.Startup
 
         private static void RegisterCallout(Type type)
         {
-            $"Registering callout {nameof(type)}".AddLog();
+            $"Registering callout {type.Name}".AddLog();
             Functions.RegisterCallout(type);
             _calloutNumber++;
         }

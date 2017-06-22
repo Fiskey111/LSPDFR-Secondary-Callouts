@@ -26,9 +26,9 @@ namespace Secondary_Callouts.Callouts
             "Gang members firing shots.  Multiple suspects.";
 
         private string _startScanner =
-            $"ATTN_UNIT_02 {Settings.UnitName} CODE99_IMMEDIATE UNITS_REPORTING GANG_RELATED";
+            $"ATTN_UNIT_02 {Settings.UnitCallsign} CODE99_IMMEDIATE UNITS_REPORTING GANG_RELATED";
         private string _acceptAudio =
-            $"OFFICER_INTRO_01 COPY_DISPATCH OUTRO_01 DISPATCH_INTRO_01 REPORT_RESPONSE_COPY_02 {Settings.UnitName} RESPOND_CODE3 SHOTS_OFFICER_LETHAL_FORCE SUSPECTS_MEMBERS_OF THE_BALLAS AND THE_LOST";
+            $"OFFICER_INTRO_01 COPY_DISPATCH OUTRO_01 DISPATCH_INTRO_01 REPORT_RESPONSE_COPY_02 {Settings.UnitCallsign} RESPOND_CODE3 SHOTS_OFFICER_LETHAL_FORCE SUSPECTS_MEMBERS_OF THE_BALLAS AND THE_LOST";
 
         private string[] _ballasModelArray = new []
         {
@@ -163,12 +163,15 @@ namespace Secondary_Callouts.Callouts
                     if (RandomNumber(10) == 1) RequestBackup(RandomNumber(2) == 1 ? GangType.Ballas : GangType.Lost);
 
                     CalloutEState = EState.Checking;
-                    if (AreaBlip.Exists()) AreaBlip.Delete();
 
                     break;
                 case EState.Checking:
+                    IsNearAnyPed(_ballasList, _lostList);
                     if (PedCheck(_ballasList) && PedCheck(_lostList))
+                    {
                         CalloutFinished();
+                        this.End();
+                    }
                     break;
             }
         }

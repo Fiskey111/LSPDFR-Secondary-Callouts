@@ -18,16 +18,16 @@ namespace Secondary_Callouts.Callouts
             "Multiple individuals reported firing on officers; some may be armed with heavy weapons.\nOfficers on scene";
 
         private string _startScanner =
-            $"ATTN_UNIT_02 {Settings.UnitName} CRIME_SHOTS_FIRED_AT_AN_OFFICER";
+            $"ATTN_UNIT_02 {Settings.UnitCallsign} CRIME_SHOTS_FIRED_AT_AN_OFFICER";
         private string _acceptAudio =
-            $"OFFICER_INTRO_01 COPY_DISPATCH OUTRO_01 DISPATCH_INTRO_01 REPORT_RESPONSE_COPY_02 {Settings.UnitName} SHOTS_OFFICER_LETHAL_FORCE RESPOND_CODE3 ALL_RESPOND";
+            $"OFFICER_INTRO_01 COPY_DISPATCH OUTRO_01 DISPATCH_INTRO_01 REPORT_RESPONSE_COPY_02 {Settings.UnitCallsign} SHOTS_OFFICER_LETHAL_FORCE RESPOND_CODE3 ALL_RESPOND";
 
         public override bool OnBeforeCalloutDisplayed()
         {
             CalloutName = CallName;
             CalloutMessage = CalloutMsg;
 
-            if (Settings.ShotsFiredCallAudio) _startScanner = $"SHOTS BEEP_LONG BEEP_LONG BEEP_LONG REQUEST_BACKUP STATIC ATTN_UNIT_02 {Settings.UnitName} CRIME_SHOTS_FIRED_AT_AN_OFFICER";
+            if (Settings.ShotsFiredCallAudio) _startScanner = $"SHOTS BEEP_LONG BEEP_LONG BEEP_LONG REQUEST_BACKUP STATIC ATTN_UNIT_02 {Settings.UnitCallsign} CRIME_SHOTS_FIRED_AT_AN_OFFICER";
 
             GiveBlipInfo(CalloutStandardization.BlipTypes.Officers, 0.75f);
             StartScannerAudio = _startScanner;
@@ -91,12 +91,15 @@ namespace Secondary_Callouts.Callouts
                     if (PlayerDistanceFromSpawnPoint > 30f) break;
 
                     CalloutEState = EState.Checking;
-                    if (AreaBlip.Exists()) AreaBlip.Delete();
 
                     break;
                 case EState.Checking:
+                    IsNearAnyPed(PedList);
                     if (PedCheck(SuspectPositionCheck(PedList).ToList()))
+                    {
                         CalloutFinished();
+                        this.End();
+                    }
 
                     break;
             }

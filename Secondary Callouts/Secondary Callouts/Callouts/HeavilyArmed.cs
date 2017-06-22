@@ -24,9 +24,9 @@ namespace Secondary_Callouts.Callouts
             "Heavily armed individual firing shots.  Multiple suspects possible.";
 
         private string _startScanner =
-            $"ATTN_UNIT_02 {Settings.UnitName} CODE99_IMMEDIATE UNITS_REPORTING CRIME_GUNFIRE";
+            $"ATTN_UNIT_02 {Settings.UnitCallsign} CODE99_IMMEDIATE UNITS_REPORTING CRIME_GUNFIRE";
         private string _acceptAudio =
-            $"OFFICER_INTRO_01 COPY_DISPATCH OUTRO_01 DISPATCH_INTRO_01 REPORT_RESPONSE_COPY_02 {Settings.UnitName} RESPOND_CODE3 SHOTS_OFFICER_LETHAL_FORCE SUSPECT_IS HEAVILY_ARMED";
+            $"OFFICER_INTRO_01 COPY_DISPATCH OUTRO_01 DISPATCH_INTRO_01 REPORT_RESPONSE_COPY_02 {Settings.UnitCallsign} RESPOND_CODE3 SHOTS_OFFICER_LETHAL_FORCE SUSPECT_IS HEAVILY_ARMED";
 
         private string _mgScanner = "ATTN_DISPATCH 1099_ALL_RESPOND SUSPECT_IS CARRYING_MGDISPATCHING_SWAT";
 
@@ -112,13 +112,22 @@ namespace Secondary_Callouts.Callouts
                     if (PlayerDistanceFromSpawnPoint > 45f) break;
 
                     CalloutEState = EState.Checking;
-                    if (AreaBlip.Exists()) AreaBlip.Delete();
+
+                    foreach (var ped in PedList)
+                    {
+                        if (!ped) continue;
+                        ped.Tasks.TakeCoverFrom(CopPedList.FirstOrDefault(), -1, true);
+                    }
 
                     break;
                 case EState.Checking:
+                    IsNearAnyPed(PedList, CopPedList);
                     PedList = SuspectPositionCheck(PedList);
                     if (PedCheck(PedList.ToList()))
+                    {
                         CalloutFinished();
+                        this.End();
+                    }
                     break;
             }
         }

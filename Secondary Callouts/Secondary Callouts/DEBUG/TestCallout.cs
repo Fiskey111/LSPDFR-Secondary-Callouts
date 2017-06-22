@@ -23,9 +23,9 @@ namespace Secondary_Callouts.DEBUG
             "Test callout";
 
         private readonly string _startScanner =
-            $"ATTN_UNIT_02 {Settings.UnitName} WE_HAVE CRIME_OFFICER_IN_NEED_OF_ASSISTANCE_01";
+            $"ATTN_UNIT_02 {Settings.UnitCallsign} WE_HAVE CRIME_OFFICER_IN_NEED_OF_ASSISTANCE_01";
         private readonly string _acceptAudio =
-            $"OFFICER_INTRO_01 COPY_DISPATCH OUTRO_01 DISPATCH_INTRO_01 REPORT_RESPONSE_COPY_02 {Settings.UnitName} EN_ROUTE_CODE3 CRIME_OFFICER_IN_NEED_OF_ASSISTANCE_01 NONLETHAL_WEAPONS";
+            $"OFFICER_INTRO_01 COPY_DISPATCH OUTRO_01 DISPATCH_INTRO_01 REPORT_RESPONSE_COPY_02 {Settings.UnitCallsign} EN_ROUTE_CODE3 CRIME_OFFICER_IN_NEED_OF_ASSISTANCE_01 NONLETHAL_WEAPONS";
 
         public override bool OnBeforeCalloutDisplayed()
         {
@@ -50,12 +50,14 @@ namespace Secondary_Callouts.DEBUG
             SpawnBlip = false;
             "Initial data set".AddLog();
             CreateCopsOnScene(false);
+            "Cops created".AddLog();
             PedList = SpawnPeds(Fiskey111Common.Rand.RandomNumber(3, 4), 12f, 12f);
             "Peds created".AddLog();
             GiveWeaponOrArmor(PedList);
             AddPedListWeapons(PedList, PedType.Type.Suspect);
             "Peds given weapons and data stored".AddLog();
             CreatePursuit(PedList);
+            GameFiber.Sleep(250);
             "Pursuit created".AddLog();
             return base.OnCalloutAccepted();
         }
@@ -66,16 +68,8 @@ namespace Secondary_Callouts.DEBUG
 
             if (IsFalseCall) return;
 
-            if (IsPursuitCompleted)
-            {
-                "Callout ending from IsPursuitCreated".AddLog();
-                CalloutFinished();
-            }
-            if (PedCheck(PedList.ToList()))
-            {
-                "Callout ending from PedCheck".AddLog();
-                CalloutFinished();
-            }
+            if (!PedCheck(PedList.ToList())) return;
+            this.End();
         }
     }
 }

@@ -37,18 +37,10 @@ namespace Secondary_Callouts.BaseClass
                 var cop = new Ped(new Model(array[Fiskey111Common.Rand.RandomNumber(array.Length)]), spawnPoint.Around2D(2f), 0f);
                 Functions.SetPedAsCop(cop);
                 Functions.SetCopAsBusy(cop, isBusy);
-                switch (i)
-                {
-                    case 0:
-                        cop.Inventory.GiveNewWeapon(WeaponHash.Pistol, 100, true);
-                        break;
-                    case 1:
-                        cop.Inventory.GiveNewWeapon(WeaponHash.PumpShotgun, 100, true);
-                        break;
-                    default:
-                        cop.Inventory.GiveNewWeapon(WeaponHash.CarbineRifle, 400, true);
-                        break;
-                }
+                cop.Inventory.GiveNewWeapon(
+                    new WeaponAsset(
+                        Settings.CopWeaponAssets()[
+                            Fiskey111Common.Rand.RandomNumber(Settings.CopWeaponAssets().Length)]), 400, true);
                 cop.MakeMissionPed();
                 EntityMethods.CheckIfOnVehicle(cop);
 

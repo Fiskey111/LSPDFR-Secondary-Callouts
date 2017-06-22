@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using LSPD_First_Response.Mod.API;
+using Rage;
 using Secondary_Callouts.ExtensionMethods;
 
 namespace Secondary_Callouts.Startup
@@ -17,11 +18,13 @@ namespace Secondary_Callouts.Startup
                 
                 AmbientHandler.StartAmbientEvents();
                 
-                if (Settings.StartingAudio) Functions.PlayScannerAudio($"ATTN_UNIT {Settings.UnitName} BEGIN_BEAT");
+                if (Settings.StartingAudio) Functions.PlayScannerAudio($"ATTN_UNIT {Settings.UnitCallsign} BEGIN_BEAT");
 
                 Detective.DetectiveMenu.Main();
 
                 DisplayLoadedMessage();
+
+                Game.AddConsoleCommands();
             }
             catch (Exception e)
             {

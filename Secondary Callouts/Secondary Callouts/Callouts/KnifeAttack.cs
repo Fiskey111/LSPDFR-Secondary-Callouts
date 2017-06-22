@@ -22,9 +22,9 @@ namespace Secondary_Callouts.Callouts
             "Individual with a knife reported attacking individuals.";
 
         private string _startScanner =
-            $"ATTN_UNIT_02 {Settings.UnitName} CITIZENS_REPORT PERSON_WITH_KNIFE";
+            $"ATTN_UNIT_02 {Settings.UnitCallsign} CITIZENS_REPORT PERSON_WITH_KNIFE";
         private string _acceptAudio =
-            $"OFFICER_INTRO_01 COPY_DISPATCH OUTRO_01 DISPATCH_INTRO_01 REPORT_RESPONSE_COPY_02 {Settings.UnitName} CRIME_AMBULANCE_REQUESTED_03 RESPOND_CODE3 PROCEED_CAUTION";
+            $"OFFICER_INTRO_01 COPY_DISPATCH OUTRO_01 DISPATCH_INTRO_01 REPORT_RESPONSE_COPY_02 {Settings.UnitCallsign} CRIME_AMBULANCE_REQUESTED_03 RESPOND_CODE3 PROCEED_CAUTION";
 
         public override bool OnBeforeCalloutDisplayed()
         {
@@ -99,13 +99,18 @@ namespace Secondary_Callouts.Callouts
                     StartPursuit();
 
                     CalloutEState = EState.Checking;
-                    if (AreaBlip.Exists()) AreaBlip.Delete();
+
                     break;
                 case EState.Checking:
+                    IsNearAnyPed(_targetList, PedList);
                     PedList = SuspectPositionCheck(PedList);
                     _targetList = SuspectPositionCheck(_targetList);
                     if (PedCheck(PedList.ToList()))
+                    {
                         CalloutFinished();
+                        this.End();
+                    }
+
                     break;
             }
         }
@@ -177,8 +182,10 @@ namespace Secondary_Callouts.Callouts
             foreach (var p in enumerable)
             {
                 if (!p || Fiskey111Common.Rand.RandomNumber(3) == 1) continue;
-
+                "Fleeing ped".AddLog();
+                p.KeepTasks = true;
                 p.Tasks.ReactAndFlee(PedList.FirstOrDefault());
+
             }
         }
     }

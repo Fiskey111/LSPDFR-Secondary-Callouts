@@ -22,9 +22,9 @@ namespace Secondary_Callouts.Callouts
             "Officer down; Suspect fleeing the scene.\nNo officers on scene, EMS en route";
 
         private string _startScanner =
-            $"ATTN_UNIT_02 {Settings.UnitName} CRIME_SHOTS_FIRED_AT_AN_OFFICER";
+            $"ATTN_UNIT_02 {Settings.UnitCallsign} CRIME_SHOTS_FIRED_AT_AN_OFFICER";
         private string _acceptAudio =
-            $"OFFICER_INTRO_01 COPY_DISPATCH OUTRO_01 DISPATCH_INTRO_01 REPORT_RESPONSE_COPY_02 {Settings.UnitName} SHOTS_OFFICER_LETHAL_FORCE RESPOND_CODE3 ALL_RESPOND";
+            $"OFFICER_INTRO_01 COPY_DISPATCH OUTRO_01 DISPATCH_INTRO_01 REPORT_RESPONSE_COPY_02 {Settings.UnitCallsign} SHOTS_OFFICER_LETHAL_FORCE RESPOND_CODE3 ALL_RESPOND";
 
         private bool _helpDisplayed, _cprStarted;
         private LtFlash.Common.Processes.ProcessHost _procHost = new LtFlash.Common.Processes.ProcessHost();

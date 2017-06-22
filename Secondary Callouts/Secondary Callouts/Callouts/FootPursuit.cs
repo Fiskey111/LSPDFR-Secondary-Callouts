@@ -18,9 +18,9 @@ namespace Secondary_Callouts.Callouts
             "Foot pursuit in progress.  Multiple suspects possible.";
 
         private string _startScanner =
-            $"ATTN_UNIT_02 {Settings.UnitName} WE_HAVE CRIME_OFFICER_IN_NEED_OF_ASSISTANCE_01";
+            $"ATTN_UNIT_02 {Settings.UnitCallsign} WE_HAVE CRIME_OFFICER_IN_NEED_OF_ASSISTANCE_01";
         private string _acceptAudio =
-            $"OFFICER_INTRO_01 COPY_DISPATCH OUTRO_01 DISPATCH_INTRO_01 REPORT_RESPONSE_COPY_02 {Settings.UnitName} EN_ROUTE_CODE3 CRIME_OFFICER_IN_NEED_OF_ASSISTANCE_01 NONLETHAL_WEAPONS";
+            $"OFFICER_INTRO_01 COPY_DISPATCH OUTRO_01 DISPATCH_INTRO_01 REPORT_RESPONSE_COPY_02 {Settings.UnitCallsign} EN_ROUTE_CODE3 CRIME_OFFICER_IN_NEED_OF_ASSISTANCE_01 NONLETHAL_WEAPONS";
 
         public override bool OnBeforeCalloutDisplayed()
         {
@@ -73,10 +73,11 @@ namespace Secondary_Callouts.Callouts
 
             if (IsFalseCall) return;
 
-            if (IsPursuit && Functions.IsPursuitStillRunning(PursuitHandler) && IsPursuitCompleted && PedCheck(PedList.ToList()))
+            if (PedCheck(PedList.ToList()))
+            {
                 CalloutFinished();
-            else if (PedCheck(PedList.ToList()))
-                CalloutFinished();
+                this.End();
+            }
         }
     }
 }

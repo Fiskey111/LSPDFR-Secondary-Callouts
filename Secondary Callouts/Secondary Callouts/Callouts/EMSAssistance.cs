@@ -25,9 +25,9 @@ namespace Secondary_Callouts.Callouts
             "EMS reported in fight; some may be armed with weapons.";
 
         private string _startScanner =
-            $"ATTN_UNIT_02 {Settings.UnitName} CITIZENS_REPORT ASSAULT_BAT";
+            $"ATTN_UNIT_02 {Settings.UnitCallsign} CITIZENS_REPORT ASSAULT_BAT";
         private string _acceptAudio =
-            $"OFFICER_INTRO_01 COPY_DISPATCH OUTRO_01 DISPATCH_INTRO_01 REPORT_RESPONSE_COPY_02 {Settings.UnitName} NONLETHAL_WEAPONS RESPOND_CODE3";
+            $"OFFICER_INTRO_01 COPY_DISPATCH OUTRO_01 DISPATCH_INTRO_01 REPORT_RESPONSE_COPY_02 {Settings.UnitCallsign} NONLETHAL_WEAPONS RESPOND_CODE3";
 
         public override bool OnBeforeCalloutDisplayed()
         {
@@ -103,7 +103,6 @@ namespace Secondary_Callouts.Callouts
                     if (PlayerDistanceFromSpawnPoint > 40f) break;
 
                     CalloutEState = EState.Checking;
-                    if (AreaBlip.Exists()) AreaBlip.Delete();
 
                     CreateBlips();
 
@@ -112,13 +111,14 @@ namespace Secondary_Callouts.Callouts
                     _hasArrived = true;
                     break;
                 case EState.Checking:
+                    IsNearAnyPed(PedList, _emsList);
                     CheckIfBeingArrested();
                     if (_hasArrived) PedList = SuspectPositionCheck(PedList.ToList());
-
-                    if (IsPursuit && IsPursuitCompleted() && PedCheck(PedList.ToList()))
+                    if (PedCheck(PedList.ToList()))
+                    {
                         CalloutFinished();
-                    else if (PedCheck(PedList.ToList()))
-                        CalloutFinished();
+                        this.End();
+                    }
                     break;
             }
         }

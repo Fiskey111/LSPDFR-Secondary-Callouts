@@ -1,4 +1,7 @@
-﻿using Rage;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Fiskey111Common;
+using Rage;
 using Secondary_Callouts.ExtensionMethods;
 
 namespace Secondary_Callouts.BaseClass
@@ -21,34 +24,19 @@ namespace Secondary_Callouts.BaseClass
             ped.Position = new Vector3(ped.Position.X, ped.Position.Y, groundPos.Value);
         }
 
-        internal static void GiveFirearms(Ped ped, Vector3 spawnPoint, bool forceWeapons)
+        internal static void GiveFirearms(Ped ped, IEnumerable<WeaponAsset> weaponList, Vector3 spawnPoint, bool forceWeapons)
         {
             var random = forceWeapons
                 ? Fiskey111Common.Rand.RandomNumber(1, 6)
                 : Fiskey111Common.Rand.RandomNumber(1, Settings.GunFireChance);
 
-            WeaponAsset weapon;
-            switch (random)
-            {
-                case 1:
-                    weapon = new WeaponAsset((uint)WeaponHash.Bat);
-                    break;
-                case 2:
-                    weapon = new WeaponAsset((uint)WeaponHash.Pistol);
-                    break;
-                case 3:
-                    weapon = new WeaponAsset((uint)WeaponHash.PumpShotgun);
-                    break;
-                case 4:
-                    weapon = new WeaponAsset((uint)WeaponHash.AssaultRifle);
-                    break;
-                case 5:
-                    ped.Armor = Fiskey111Common.Rand.RandomNumber(25, 101);
-                    break;
-            }
-            if (random > 4) return;
-            var gun = new Weapon(weapon, spawnPoint, 400);
-            gun.GiveTo(ped);
+            if (weaponList == null) weaponList = Settings.SuspectWeaponAssets();
+            weaponList.ToArray();
+
+            if (random != 1) return;
+
+            ped.Inventory.GiveNewWeapon(weaponList.ToArray()[Rand.RandomNumber(weaponList.ToArray().Length)], 400,
+                true);
         }
     }
 }

@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Windows.Forms;
 using LSPD_First_Response;
 using LSPD_First_Response.Engine.Scripting;
 using LSPD_First_Response.Mod.API;
 using LSPD_First_Response.Mod.Callouts;
 using Rage;
+using Rage.Native;
 using Secondary_Callouts;
 using Secondary_Callouts.API;
 using Secondary_Callouts.BaseClass;
@@ -92,14 +94,15 @@ namespace SecondaryCallouts
         {
             "Callout has been accepted".AddLog();
 
-            var fiber = new GameFiber(StartSecondaryAudio);
-            fiber.Start();
-            _activeFibers.Add(fiber);
+            if (!string.IsNullOrWhiteSpace(AcceptScannerAudio))
+            {
+                var fiber = new GameFiber(StartSecondaryAudio);
+                fiber.Start();
+                _activeFibers.Add(fiber);
+            }
 
             if (_computerPlus) ComputerPlusAPI.SetCalloutStatusToUnitResponding(_callId);
-
-            if (!string.IsNullOrWhiteSpace(AcceptScannerAudio)) StartSecondaryAudio();
-
+            
             //            if (FalseCall && Fiskey111Common.Rand.RandomNumber(1, 15) == 1)
             //            {
             //                "False Call".AddLog();
@@ -137,8 +140,7 @@ namespace SecondaryCallouts
             if (Game.IsKeyDown(Keys.End))
             {
                 "Forcing callout end".AddLog(true);
-
-                this.CalloutFinished();
+                Functions.StopCurrentCallout();
             }
 
             if (!_isFalseCall) return;
@@ -185,13 +187,9 @@ namespace SecondaryCallouts
                 GameFiber.Yield();
 
                 if (!Game.IsKeyDown(Keys.Y)) continue;
-                Game.LogTrivial("Key pressed");
                 RequestDetectives();
                 break;
             }
-            Game.LogTrivial("Broken");
-
-            this.End();
         }
 
         private void DisplayEndInformation()
@@ -267,8 +265,13 @@ namespace SecondaryCallouts
 
             foreach (var ped in peds)
             {
-                if (!ped) continue;
+                if (!ped)
+                {
+                    "Ped doesn't exist".AddLog();
+                    continue;
+                }
                 Functions.AddPedToPursuit(PursuitHandler, ped);
+                "Ped added to pursuit".AddLog();
             }
 
             Functions.SetPursuitIsActiveForPlayer(PursuitHandler, true);
@@ -278,21 +281,21 @@ namespace SecondaryCallouts
             $"Peds added to pursuit: {Functions.GetPursuitPeds(PursuitHandler).Length}".AddLog();
         }
 
-        public void GiveWeaponOrArmor(Ped ped, bool forceWeapons = false)
+        public void GiveWeaponOrArmor(Ped ped, IEnumerable<WeaponAsset> weaponList = null, bool forceWeapons = false)
         {
             if (!ped) return;
 
-            EntityMethods.GiveFirearms(ped, SpawnPoint, forceWeapons);
+            EntityMethods.GiveFirearms(ped, weaponList, SpawnPoint, forceWeapons);
         }
 
-        public void GiveWeaponOrArmor(List<Ped> pedList)
+        public void GiveWeaponOrArmor(List<Ped> pedList, IEnumerable<WeaponAsset> weaponList = null)
         {
             if (pedList.Count < 1) return;
 
             foreach (var ped in pedList)
             {
                 if (!ped) continue;
-                GiveWeaponOrArmor(ped);
+                GiveWeaponOrArmor(ped, weaponList);
             }
         }
 
@@ -308,7 +311,6 @@ namespace SecondaryCallouts
             }
         }
 
-        public bool IsPursuitCompleted => IsPursuit && Functions.IsPursuitStillRunning(PursuitHandler);
         public bool IsPedInPursuit(Ped ped) => IsPursuit && Functions.GetPursuitPeds(PursuitHandler).Any(p => p == ped);
 
         public List<Ped> SuspectPositionCheck(List<Ped> pedList)
@@ -382,6 +384,22 @@ namespace SecondaryCallouts
                     };
                     return county;
             }
+        }
+
+        public void IsNearAnyPed(List<Ped> pedList1, List<Ped> pedList2 = null)
+        {
+            if (!AreaBlip.Exists()) return;
+
+            if (pedList2 != null) pedList1.AddRange(pedList2);
+            
+            foreach (var ped in pedList1)
+            {
+                if (!ped || !AreaBlip.Exists()) continue;
+                if (NativeFunction.Natives.x6CD5A433374D4CFB<bool>(Game.LocalPlayer.Character, ped)) AreaBlip.Delete();
+            }
+
+            if (pedList1.Any(p => p.DistanceTo(Game.LocalPlayer.Character) < 20f)) AreaBlip.Delete();
+            if (pedList2 != null && pedList2.Any(p => p.DistanceTo(Game.LocalPlayer.Character) < 20f)) AreaBlip.Delete();
         }
 
         public void SendBackup(Vector3 sp, EBackupResponseType responseType = EBackupResponseType.Code3, EBackupUnitType backupType = EBackupUnitType.LocalUnit, bool random = false)
