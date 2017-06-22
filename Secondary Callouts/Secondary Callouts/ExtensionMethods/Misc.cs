@@ -1,5 +1,7 @@
-﻿using LSPD_First_Response.Mod.API;
+﻿using System.Linq;
+using LSPD_First_Response.Mod.API;
 using Rage;
+using Secondary_Callouts.Objects;
 
 namespace Secondary_Callouts.ExtensionMethods
 {
@@ -16,5 +18,7 @@ namespace Secondary_Callouts.ExtensionMethods
             var zone = Functions.GetZoneAtPosition(spawnPoint);
             return zone.AudioName;
         }
+
+        internal static Animation GetAnimation(this Animation[] array, Animation.EMSAnimation type) => array.FirstOrDefault(anim => anim.AnimationType == type);
     }
 }
