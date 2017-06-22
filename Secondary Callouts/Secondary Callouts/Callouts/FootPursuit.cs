@@ -73,7 +73,7 @@ namespace Secondary_Callouts.Callouts
 
             if (IsFalseCall) return;
 
-            if (IsPursuit && Functions.IsPursuitStillRunning(PursuitHandler) && IsPursuitCompleted() && PedCheck(PedList.ToList()))
+            if (IsPursuit && Functions.IsPursuitStillRunning(PursuitHandler) && IsPursuitCompleted && PedCheck(PedList.ToList()))
                 CalloutFinished();
             else if (PedCheck(PedList.ToList()))
                 CalloutFinished();

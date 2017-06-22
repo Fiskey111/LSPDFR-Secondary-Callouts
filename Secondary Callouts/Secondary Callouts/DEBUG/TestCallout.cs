@@ -29,32 +29,34 @@ namespace Secondary_Callouts.DEBUG
 
         public override bool OnBeforeCalloutDisplayed()
         {
+            "Starting OnBeforeCalloutDisplayed".AddLog();
             CalloutName = CallName;
             CalloutMessage = CalloutMsg;
             FalseCall = false;
             StartScannerAudio = _startScanner;
             ComputerPlus_CallMsg = $"Pursuit on: {World.GetStreetName(SpawnPoint)}";
-
+            "Initial data set".AddLog();
             GiveBlipInfo(CalloutStandardization.BlipTypes.Officers, 0.75f);
-            
+            "Returning base.OnBeforeCalloutDisplayed".AddLog();
             return base.OnBeforeCalloutDisplayed();
         }
 
         public override bool OnCalloutAccepted()
         {
+            "Starting OnCalloutAccepted".AddLog();
             AcceptScannerAudio = _acceptAudio;
             ResponseInfo = CalloutResponseInfo;
             if (ComputerPlus_Active) ComputerPlusAPI.AddUpdateToCallout(ComputerPlus_GUID, ComputerPlusUpdate);
             SpawnBlip = false;
-
+            "Initial data set".AddLog();
             CreateCopsOnScene(false);
             PedList = SpawnPeds(Fiskey111Common.Rand.RandomNumber(3, 4), 12f, 12f);
-            
+            "Peds created".AddLog();
             GiveWeaponOrArmor(PedList);
             AddPedListWeapons(PedList, PedType.Type.Suspect);
-
+            "Peds given weapons and data stored".AddLog();
             CreatePursuit(PedList);
-
+            "Pursuit created".AddLog();
             return base.OnCalloutAccepted();
         }
 
@@ -64,8 +66,16 @@ namespace Secondary_Callouts.DEBUG
 
             if (IsFalseCall) return;
 
-            if (IsPursuitCompleted) CalloutFinished();
-            if (PedCheck(PedList.ToList())) CalloutFinished();
+            if (IsPursuitCompleted)
+            {
+                "Callout ending from IsPursuitCreated".AddLog();
+                CalloutFinished();
+            }
+            if (PedCheck(PedList.ToList()))
+            {
+                "Callout ending from PedCheck".AddLog();
+                CalloutFinished();
+            }
         }
     }
 }
