@@ -7,7 +7,7 @@ namespace Secondary_Callouts.Startup
 {
     internal class CalloutLoader
     {
-        private static int _calloutNumber = 0;
+        private static int _calloutNumber;
 
         internal static void RegisterCallouts()
         {
@@ -21,6 +21,9 @@ namespace Secondary_Callouts.Startup
             RegisterCallout(typeof(ShotsOnOfficer));
             //RegisterCallout(typeof(OfficerShot));
 
+#if DEBUG
+            RegisterCallout(typeof(DEBUG.TestCallout));
+#endif
             $"{_calloutNumber} high-quality callouts loaded!".AddLog(true);
         }
 

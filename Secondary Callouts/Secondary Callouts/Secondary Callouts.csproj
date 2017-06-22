@@ -81,7 +81,9 @@
     <Compile Include="Callouts\KnifeAttack.cs" />
     <Compile Include="Callouts\OfficerShot.cs" />
     <Compile Include="Callouts\ShotsOnOfficer.cs" />
+    <Compile Include="Commands.cs" />
     <Compile Include="CommonMethods.cs" />
+    <Compile Include="DEBUG\TestCallout.cs" />
     <Compile Include="Detective\MultipleOptionConversation.cs" />
     <Compile Include="Detective\MultipleOptionLine.cs" />
     <Compile Include="Detective\Detective.cs" />

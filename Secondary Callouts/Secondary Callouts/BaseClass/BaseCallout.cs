@@ -213,7 +213,7 @@ namespace SecondaryCallouts
             CalloutName.DisplayNotification($"~g~Code 4~w~, good work officer!");
         }
 
-
+        
         // SUPPORTING METHODS
 
         public void GiveBlipInfo(CalloutStandardization.BlipTypes blipType, float alpha = 1.0f, CalloutStandardization.BlipScale blipScale = CalloutStandardization.BlipScale.SearchArea)
@@ -308,7 +308,7 @@ namespace SecondaryCallouts
             }
         }
 
-        public bool IsPursuitCompleted() => IsPursuit && Functions.IsPursuitStillRunning(PursuitHandler);
+        public bool IsPursuitCompleted => IsPursuit && Functions.IsPursuitStillRunning(PursuitHandler);
         public bool IsPedInPursuit(Ped ped) => IsPursuit && Functions.GetPursuitPeds(PursuitHandler).Any(p => p == ped);
 
         public List<Ped> SuspectPositionCheck(List<Ped> pedList)
