@@ -2,6 +2,7 @@
 using LSPD_First_Response.Mod.API;
 using Rage;
 using Rage.Native;
+using Secondary_Callouts.Objects;
 
 namespace Secondary_Callouts.ExtensionMethods
 {
@@ -23,6 +24,12 @@ namespace Secondary_Callouts.ExtensionMethods
             if (!ped.Exists()) return false;
             return Functions.IsPedArrested(ped) || ped.IsDead;
         }
+
+        public static void PlayAnimation(this Ped ped, Animation animation) => ped.Tasks.PlayAnimation(
+            animation.Dictionary, animation.AnimationName, animation.BlendInSpeed, animation.Flags);
+
+        public static void PlayAnimationWait(this Ped ped, Animation animation) => ped.Tasks.PlayAnimation(
+            animation.Dictionary, animation.AnimationName, animation.BlendInSpeed, animation.Flags).WaitForCompletion(animation.AnimationTime + 5000);
 
         public static void Task_Scenario(this Ped ped, string scenario) => NativeFunction.Natives.TASK_START_SCENARIO_IN_PLACE(ped, scenario.ToString(), 0, true);
 
