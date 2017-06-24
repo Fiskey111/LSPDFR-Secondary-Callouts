@@ -106,8 +106,6 @@ namespace Secondary_Callouts.Callouts
 
                     CreateBlips();
 
-                    StartPursuit();
-
                     _hasArrived = true;
                     break;
                 case EState.Checking:
@@ -127,27 +125,7 @@ namespace Secondary_Callouts.Callouts
         {
             base.End();
 
-            _ambulance.Dismiss();
-        }
-
-        private void StartPursuit()
-        {
-            if (Fiskey111Common.Rand.RandomNumber(1, 5) != 1) return;
-
-            var pedList = new List<Ped>();
-            foreach (var p in PedList)
-            {
-                if (PedList.IndexOf(p) == 0)
-                {
-                    pedList.Add(p);
-                    continue;
-                }
-                if (Fiskey111Common.Rand.RandomNumber(1, 5) == 1) pedList.Add(p);
-            }
-
-            $"Starting pursuit with {pedList.Count} runners".AddLog();
-
-            CreatePursuit(pedList);
+            if (_ambulance) _ambulance.Dismiss();
         }
 
         private void StartFightTask(IEnumerable<Ped> pedList)
@@ -168,9 +146,7 @@ namespace Secondary_Callouts.Callouts
 
         private void CheckIfBeingArrested()
         {
-            if (_reactAndFlee) return;
-
-            if (PlayerDistanceFromSpawnPoint > 10f) return;
+            if (_reactAndFlee || PlayerDistanceFromSpawnPoint > 10f) return;
 
             foreach (var p in _emsList)
             {
@@ -180,7 +156,15 @@ namespace Secondary_Callouts.Callouts
                 p.Tasks.ReactAndFlee(PedList.FirstOrDefault());
             }
 
-            CreatePursuit(PedList);
+            var list = new List<Ped>();
+            for (int i = 0; i < Fiskey111Common.Rand.RandomNumber(0, PedList.Count); i++)
+            {
+                list.Add(PedList[i]);
+            }
+
+            $"Total of {list.Count} peds added to list".AddLog();
+
+            CreatePursuit(list);
 
             foreach (var p in PedList)
             {

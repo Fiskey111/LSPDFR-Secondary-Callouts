@@ -391,15 +391,9 @@ namespace SecondaryCallouts
             if (!AreaBlip.Exists()) return;
 
             if (pedList2 != null) pedList1.AddRange(pedList2);
-            
-            foreach (var ped in pedList1)
-            {
-                if (!ped || !AreaBlip.Exists()) continue;
-                if (NativeFunction.Natives.x6CD5A433374D4CFB<bool>(Game.LocalPlayer.Character, ped)) AreaBlip.Delete();
-            }
 
-            if (pedList1.Any(p => p.DistanceTo(Game.LocalPlayer.Character) < 20f)) AreaBlip.Delete();
-            if (pedList2 != null && pedList2.Any(p => p.DistanceTo(Game.LocalPlayer.Character) < 20f)) AreaBlip.Delete();
+            if (pedList1.Any(p => p.DistanceTo(Game.LocalPlayer.Character) < 20f) && AreaBlip.Exists()) AreaBlip.Delete();
+            if (pedList2 != null && pedList2.Any(p => p.DistanceTo(Game.LocalPlayer.Character) < 20f) && AreaBlip.Exists()) AreaBlip.Delete();
         }
 
         public void SendBackup(Vector3 sp, EBackupResponseType responseType = EBackupResponseType.Code3, EBackupUnitType backupType = EBackupUnitType.LocalUnit, bool random = false)
