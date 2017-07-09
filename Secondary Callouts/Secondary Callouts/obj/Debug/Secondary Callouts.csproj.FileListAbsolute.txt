@@ -20,3 +20,5 @@ C:\Users\cfisk\Documents\GitHub\LSPDFR-Secondary-Callouts\Secondary Callouts\Sec
 C:\Users\cfisk\Documents\GitHub\LSPDFR-Secondary-Callouts\Secondary Callouts\Secondary Callouts\obj\Debug\Secondary Callouts.csprojResolveAssemblyReference.cache
 C:\Users\cfisk\Documents\GitHub\LSPDFR-Secondary-Callouts\Secondary Callouts\Secondary Callouts\obj\Debug\Secondary Callouts.dll
 C:\Users\cfisk\Documents\GitHub\LSPDFR-Secondary-Callouts\Secondary Callouts\Secondary Callouts\obj\Debug\Secondary Callouts.pdb
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\RagePROletariat.dll
+C:\Users\cfisk\OneDrive\Documents\GitHub\Secondary-Callouts\Secondary Callouts\Secondary Callouts\bin\Debug\RagePROletariat.pdb

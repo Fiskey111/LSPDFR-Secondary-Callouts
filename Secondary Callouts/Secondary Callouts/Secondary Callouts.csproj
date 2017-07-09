@@ -55,6 +55,9 @@
     <Reference Include="RagePluginHookSDK">
       <HintPath>..\..\..\..\Development\RagePluginHookSDK.dll</HintPath>
     </Reference>
+    <Reference Include="RagePROletariat">
+      <HintPath>..\..\..\..\..\..\Desktop\Coding\Callouts\L.S.Noire final\LSN External\BETA\L.S. Noir v0.418.17.0\Grand Theft Auto V\RagePROletariat.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -103,10 +106,14 @@
     <Compile Include="Settings.cs" />
     <Compile Include="Startup\AmbientHandler.cs" />
     <Compile Include="Startup\CalloutLoader.cs" />
+    <Compile Include="Startup\RagePro.cs" />
     <Compile Include="Startup\StartDuty.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AmbientEvents\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Startup\PublicKey.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

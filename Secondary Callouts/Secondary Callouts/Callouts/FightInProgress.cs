@@ -89,13 +89,14 @@ namespace Secondary_Callouts.Callouts
                     if (PlayerDistanceFromSpawnPoint > 40f) break;
 
                     CalloutEState = EState.Checking;
-
+                    
                     break;
                 case EState.Checking:
                     IsNearAnyPed(PedList);
                     PedList = SuspectPositionCheck(PedList);
                     if (PedCheck(PedList.ToList()))
                     {
+                        GiveCourtCase(PedList.Where(p => p.IsAlive).ToList(), "Assault and battery");
                         CalloutFinished();
                         this.End();
                     }

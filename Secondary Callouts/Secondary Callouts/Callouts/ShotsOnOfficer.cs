@@ -41,24 +41,21 @@ namespace Secondary_Callouts.Callouts
 
         public override bool OnCalloutAccepted()
         {
-            GameFiber.StartNew(delegate
-            {
-                AcceptScannerAudio = _acceptAudio;
+            AcceptScannerAudio = _acceptAudio;
 
-                PedList = SpawnPeds(Fiskey111Common.Rand.RandomNumber(3, 10), 4f);
+            PedList = SpawnPeds(Fiskey111Common.Rand.RandomNumber(3, 10), 4f);
 
-                CreateCopsOnScene(true);
+            CreateCopsOnScene(true);
 
-                ResponseInfo = CalloutResponseInfo;
+            ResponseInfo = CalloutResponseInfo;
 
-                GiveWeapons(PedList);
+            GiveWeapons(PedList);
 
-                AddPedListWeapons(PedList, PedType.Type.Suspect);
+            AddPedListWeapons(PedList, PedType.Type.Suspect);
 
-                if (ComputerPlus_Active) ComputerPlusAPI.AddUpdateToCallout(ComputerPlus_GUID, ComputerPlusUpdate);
+            if (ComputerPlus_Active) ComputerPlusAPI.AddUpdateToCallout(ComputerPlus_GUID, ComputerPlusUpdate);
 
-                CalloutEState = EState.EnRoute;
-            });
+            CalloutEState = EState.EnRoute;
 
             return base.OnCalloutAccepted();
         }
@@ -97,6 +94,7 @@ namespace Secondary_Callouts.Callouts
                     IsNearAnyPed(PedList);
                     if (PedCheck(SuspectPositionCheck(PedList).ToList()))
                     {
+                        GiveCourtCase(PedList.Where(p => p.IsAlive).ToList(), "Attempted murder of a police officer; Illegal possession of a firearm");
                         CalloutFinished();
                         this.End();
                     }

@@ -13,6 +13,12 @@ namespace Secondary_Callouts.Startup
             try
             {
                 DisplayLoadingMessage();
+
+//                if (!RageProRegistration.RegisterRagePro())
+//                {
+//                    Game.DisplayNotification(
+//                        "Access to Secondary Callouts denied.\nIf you believe this was in error, please contact Fiskey111.");
+//                }
                 
                 CalloutLoader.RegisterCallouts();
                 

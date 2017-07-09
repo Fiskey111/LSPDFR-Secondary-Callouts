@@ -58,12 +58,6 @@ namespace Secondary_Callouts.Callouts
 
             CreatePursuit(PedList);
 
-            GameFiber.Sleep(0250);
-
-            //AssignCopsToPursuit(PedList);
-
-            GameFiber.Sleep(0500);
-
             return base.OnCalloutAccepted();
         }
 
@@ -76,6 +70,7 @@ namespace Secondary_Callouts.Callouts
             if (PedCheck(PedList.ToList()))
             {
                 CalloutFinished();
+                GiveCourtCase(PedList.Where(p => p.IsAlive).ToList(), "Resisting arrest; failure to stop");
                 this.End();
             }
         }

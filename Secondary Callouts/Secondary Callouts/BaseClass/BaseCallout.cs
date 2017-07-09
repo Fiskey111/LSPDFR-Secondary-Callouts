@@ -281,6 +281,18 @@ namespace SecondaryCallouts
             $"Peds added to pursuit: {Functions.GetPursuitPeds(PursuitHandler).Length}".AddLog();
         }
 
+        public void GivePedsCourtCase(List<Ped> pedList, string charge)
+        {
+            if (PluginCheck.IsLSPDFRPlusRunning()) LSPDFRPlusAPI.AddCourtCase(pedList, charge);
+        }
+
+        public void GivePedsCourtCase(List<Ped> pedList1, List<Ped> pedList2, string charge)
+        {
+            if (!PluginCheck.IsLSPDFRPlusRunning()) return;
+            LSPDFRPlusAPI.AddCourtCase(pedList1, charge);
+            LSPDFRPlusAPI.AddCourtCase(pedList2, charge);
+        }
+
         public void GiveWeaponOrArmor(Ped ped, IEnumerable<WeaponAsset> weaponList = null, bool forceWeapons = false)
         {
             if (!ped) return;
@@ -299,7 +311,7 @@ namespace SecondaryCallouts
             }
         }
 
-        public void GiveFightTasks(IEnumerable<Ped> pedList, float radius = 40f)
+        public void GiveFightTasks(IEnumerable<Ped> pedList, float radius = 100f)
         {
             foreach (var perp in pedList)
             {
@@ -316,7 +328,6 @@ namespace SecondaryCallouts
         public List<Ped> SuspectPositionCheck(List<Ped> pedList)
         {
             var list = pedList.ToList();
-            
             if (list.Count < 1 || !Settings.AllowEscapeSuspect) return list;
 
             for (var index = list.Count - 1; index >= 0; index--)
@@ -325,6 +336,7 @@ namespace SecondaryCallouts
                 if (!ped) continue;
                 if (IsPursuit && IsPedInPursuit(ped)) continue;
                 if (ped.Position.DistanceTo(Game.LocalPlayer.Character) < 60f || Functions.IsPedGettingArrested(ped)) continue;
+
                 $"Ped considered escaped because distance = {Vector3.Distance(ped.Position, Game.LocalPlayer.Character)}".AddLog();
                 CalloutName.DisplayNotification("~r~Suspect escaped~w~");
                 if (FinalPedList.Any(p => p.Pedestrian == ped)) FinalPedList.First(p => p.Pedestrian == ped).Escaped = true;
@@ -339,7 +351,7 @@ namespace SecondaryCallouts
 
             StartedWeaponFireCheck = true;
             
-            var fiber = new GameFiber(() => WeaponFireCheck(pedList));
+            var fiber = new GameFiber(() => WeaponFireCheck(pedList.ToList()));
             fiber.Start();
             _activeFibers.Add(fiber);
         }
@@ -390,10 +402,10 @@ namespace SecondaryCallouts
         {
             if (!AreaBlip.Exists()) return;
 
-            if (pedList2 != null) pedList1.AddRange(pedList2);
+            var pList = pedList1.ToList();
+            if (pedList2 != null) pList.AddRange(pedList2);
 
-            if (pedList1.Any(p => p.DistanceTo(Game.LocalPlayer.Character) < 20f) && AreaBlip.Exists()) AreaBlip.Delete();
-            if (pedList2 != null && pedList2.Any(p => p.DistanceTo(Game.LocalPlayer.Character) < 20f) && AreaBlip.Exists()) AreaBlip.Delete();
+            if (pList.Any(p => p.DistanceTo(Game.LocalPlayer.Character) < 35f) && AreaBlip.Exists()) AreaBlip.Delete();
         }
 
         public void SendBackup(Vector3 sp, EBackupResponseType responseType = EBackupResponseType.Code3, EBackupUnitType backupType = EBackupUnitType.LocalUnit, bool random = false)
@@ -466,9 +478,9 @@ namespace SecondaryCallouts
             {
                 if (!ped) return false;
                 if (Functions.IsPedArrested(ped) || ped.IsDead || FinalPedList.Any(p => p.Pedestrian && p.Pedestrian == ped && p.Escaped)) continue;
-
                 return false;
             }
+            "Returning PedCheck true".AddLog();
             return true;
         }
 

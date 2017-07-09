@@ -17,6 +17,8 @@ namespace Secondary_Callouts.ExtensionMethods
                 if (!ent) continue;
                 ent.Dismiss();
             }
+
+            list.Clear();
         }
 
         public static bool PedCheck(this Ped ped)
@@ -27,9 +29,6 @@ namespace Secondary_Callouts.ExtensionMethods
 
         public static void PlayAnimation(this Ped ped, Animation animation) => ped.Tasks.PlayAnimation(
             animation.Dictionary, animation.AnimationName, animation.BlendInSpeed, animation.Flags);
-
-        public static void PlayAnimationWait(this Ped ped, Animation animation) => ped.Tasks.PlayAnimation(
-            animation.Dictionary, animation.AnimationName, animation.BlendInSpeed, animation.Flags).WaitForCompletion(animation.AnimationTime + 5000);
 
         public static void Task_Scenario(this Ped ped, string scenario) => NativeFunction.Natives.TASK_START_SCENARIO_IN_PLACE(ped, scenario.ToString(), 0, true);
 

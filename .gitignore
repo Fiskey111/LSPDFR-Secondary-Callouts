@@ -82,3 +82,6 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 Secondary Callouts/.vs/Secondary Callouts/v15/.suo
+/Secondary Callouts/Secondary Callouts/Startup/RagePro.cs
+/Secondary Callouts/Secondary Callouts/Startup/RagePro.cs
+/Secondary Callouts/Secondary Callouts/Startup/PublicKey.xml

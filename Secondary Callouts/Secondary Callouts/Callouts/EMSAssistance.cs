@@ -44,6 +44,10 @@ namespace Secondary_Callouts.Callouts
         public override bool OnCalloutAccepted()
         {
             AcceptScannerAudio = _acceptAudio;
+            ResponseInfo = CalloutResponseInfo;
+            BlipAlpha = 0.75f;
+            CalloutEState = EState.Accepted;
+            if (ComputerPlus_Active) ComputerPlusAPI.AddUpdateToCallout(ComputerPlus_GUID, ComputerPlusUpdate);
 
             _ambulance = new Vehicle(new Model("ambulance"), SpawnPoint)
             {
@@ -52,23 +56,12 @@ namespace Secondary_Callouts.Callouts
             };
 
             _emsList = SpawnPeds("s_m_m_paramedic_01", 2, 2f);
-
             PedList = SpawnPeds(Fiskey111Common.Rand.RandomNumber(2, 6));
 
             AddPedList(_emsList, PedType.Type.Service);
-
-            ResponseInfo = CalloutResponseInfo;
-
-            BlipAlpha = 0.75f;
-
             GiveWeaponOrArmor(PedList);
-
             AddPedListWeapons(PedList, PedType.Type.Suspect);
-
-            if (ComputerPlus_Active) ComputerPlusAPI.AddUpdateToCallout(ComputerPlus_GUID, ComputerPlusUpdate);
-
-            CalloutEState = EState.Accepted;
-
+            
             return base.OnCalloutAccepted();
         }
 
@@ -98,23 +91,22 @@ namespace Secondary_Callouts.Callouts
                     break;
                 case EState.EnRoute:
                     if (PlayerDistanceFromSpawnPoint > 50f) break;
-                    if (!StartedWeaponFireCheck) StartWeaponFireCheck(PedList.ToList());
+                    if (!StartedWeaponFireCheck) StartWeaponFireCheck(PedList);
 
                     if (PlayerDistanceFromSpawnPoint > 40f) break;
 
                     CalloutEState = EState.Checking;
-
-                    CreateBlips();
 
                     _hasArrived = true;
                     break;
                 case EState.Checking:
                     IsNearAnyPed(PedList, _emsList);
                     CheckIfBeingArrested();
-                    if (_hasArrived) PedList = SuspectPositionCheck(PedList.ToList());
-                    if (PedCheck(PedList.ToList()))
+                    PedList = SuspectPositionCheck(PedList);
+                    if (PedCheck(PedList))
                     {
                         CalloutFinished();
+                        GiveCourtCase(PedList.Where(p => p.IsAlive).ToList(), "Assault and battery on a paramedic");
                         this.End();
                     }
                     break;
@@ -128,7 +120,7 @@ namespace Secondary_Callouts.Callouts
             if (_ambulance) _ambulance.Dismiss();
         }
 
-        private void StartFightTask(IEnumerable<Ped> pedList)
+        private void StartFightTask(List<Ped> pedList)
         {
             foreach (var p in pedList)
             {
@@ -138,16 +130,10 @@ namespace Secondary_Callouts.Callouts
             }
         }
 
-        private void CreateBlips()
-        {
-            foreach (var emt in _emsList)
-                if (emt) BlipList.Add(CalloutStandardization.CreateStandardizedBlip(emt, CalloutStandardization.BlipTypes.Support));
-        }
-
         private void CheckIfBeingArrested()
         {
             if (_reactAndFlee || PlayerDistanceFromSpawnPoint > 10f) return;
-
+            _reactAndFlee = true;
             foreach (var p in _emsList)
             {
                 if (!p) continue;
@@ -155,9 +141,10 @@ namespace Secondary_Callouts.Callouts
                 p.BlockPermanentEvents = true;
                 p.Tasks.ReactAndFlee(PedList.FirstOrDefault());
             }
-
+            
+            var random = Fiskey111Common.Rand.RandomNumber(0, PedList.Count);
             var list = new List<Ped>();
-            for (int i = 0; i < Fiskey111Common.Rand.RandomNumber(0, PedList.Count); i++)
+            for (int i = 0; i < random; i++)
             {
                 list.Add(PedList[i]);
             }
@@ -171,8 +158,6 @@ namespace Secondary_Callouts.Callouts
                 if (!p || !IsPursuit || !IsPedInPursuit(p)) continue;
                 p.Tasks.FightAgainst(Game.LocalPlayer.Character);
             }
-            
-            _reactAndFlee = true;
         }
     }
 }

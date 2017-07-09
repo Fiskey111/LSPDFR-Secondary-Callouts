@@ -55,7 +55,7 @@ namespace Secondary_Callouts.Callouts
             new Animation(CPR_to_Mouth, "mini@cpr@char_b@cpr_str", "cpr_kol_to_cpr", 1500, AnimationFlags.StayInEndFrame),
             new Animation(MTM, "mini@cpr@char_b@cpr_str", "cpr_kol", 8000, AnimationFlags.StayInEndFrame),
             new Animation(Success, "mini@cpr@char_b@cpr_str", "cpr_success", 32000, AnimationFlags.None),
-            new Animation(Fail, "mini@cpr@char_b@cpr_str", "cpr_fail", 26000, AnimationFlags.StayInEndFrame)
+            new Animation(Fail, "mini@cpr@char_b@cpr_str", "cpr_fail", 26000, AnimationFlags.None)
         };
 
         public override bool OnBeforeCalloutDisplayed()
@@ -64,6 +64,10 @@ namespace Secondary_Callouts.Callouts
             CalloutMessage = CalloutMsg;
             ComputerPlus_CallMsg = $"Officer down near {World.GetStreetName(SpawnPoint)}. Suspect at large.";
             StartScannerAudio = _startScanner;
+            var weapons = Game.LocalPlayer.Character.Inventory.Weapons;
+
+            foreach (var gun in weapons)
+                Game.LocalPlayer.Character.Inventory.GiveNewWeapon(gun.Asset, gun.Ammo, false);
 
             GiveBlipInfo(CalloutStandardization.BlipTypes.Officers, 0.75f);
             
@@ -122,12 +126,11 @@ namespace Secondary_Callouts.Callouts
                             Game.DisplayHelp("Press ~y~Y~w~ to perform CPR on the ~y~officer~w~ while you wait for ~g~EMS~w~");
                         }
                         if (!Game.IsKeyDown(System.Windows.Forms.Keys.Y)) return;
-                        
+                        Game.LocalPlayer.Character.Position = CopPedList[0].LeftPosition;
                         _procHost.ActivateProcess(StartCPR);
                         _procHost.Start();
                     }
-
-                        break;
+                    break;
             }
         }
 
@@ -168,7 +171,8 @@ namespace Secondary_Callouts.Callouts
 
 
             cop.PlayAnimation(startCop);
-            Player.PlayAnimationWait(startPlayer);
+            Player.PlayAnimation(startPlayer);
+            GameFiber.Sleep(startPlayer.AnimationTime);
 
             _procHost.SwapProcesses(StartCPR, AwaitKeypress);
         }
@@ -177,15 +181,11 @@ namespace Secondary_Callouts.Callouts
         {
             Game.DisplayHelp("Press ~y~Y~w~ to perform a compression" +
                              "\nPress ~y~U~w~ to perform mouth-to-mouth", true);
-
-            while (!Game.IsKeyDown(Keys.Y) || Game.IsKeyDown(Keys.U))
-                GameFiber.Yield();
-
             if (Game.IsKeyDown(Keys.Y))
             {
                 _procHost.SwapProcesses(StartCPR, CPRPump);
             }
-            else
+            else if (Game.IsKeyDown(Keys.U))
             {
                 _procHost.SwapProcesses(StartCPR, CPRMouth);
             }
@@ -200,7 +200,8 @@ namespace Secondary_Callouts.Callouts
             var cop = CopPedList[0];
 
             cop.PlayAnimation(pumpCop);
-            Player.PlayAnimationWait(pumpPlayer);
+            Player.PlayAnimation(pumpPlayer);
+            GameFiber.Sleep(pumpPlayer.AnimationTime);
 
             if (Rand.RandomNumber(4) == 1) _procHost.SwapProcesses(CPRPump, SuccessFail);
             _procHost.SwapProcesses(CPRPump, AwaitKeypress);
@@ -219,13 +220,16 @@ namespace Secondary_Callouts.Callouts
             var cop = CopPedList[0];
 
             cop.PlayAnimation(startCop);
-            Player.PlayAnimationWait(startPlayer);
+            Player.PlayAnimation(startPlayer);
+            GameFiber.Sleep(startPlayer.AnimationTime);
 
             cop.PlayAnimation(mtmCop);
-            Player.PlayAnimationWait(mtmPlayer);
+            Player.PlayAnimation(mtmPlayer);
+            GameFiber.Sleep(mtmPlayer.AnimationTime);
 
             cop.PlayAnimation(stopCop);
-            Player.PlayAnimationWait(stopPlayer);
+            Player.PlayAnimation(stopPlayer);
+            GameFiber.Sleep(stopPlayer.AnimationTime);
 
             if (Rand.RandomNumber(4) == 1) _procHost.SwapProcesses(CPRMouth, SuccessFail);
             _procHost.SwapProcesses(CPRMouth, AwaitKeypress);
@@ -248,7 +252,8 @@ namespace Secondary_Callouts.Callouts
                 cop.Resurrect();
                 cop.Health = 1;
                 cop.IsInvincible = true;
-                Player.PlayAnimationWait(successPlayer);
+                Player.PlayAnimation(successPlayer);
+                GameFiber.Sleep(successPlayer.AnimationTime);
                 Player.PlayAmbientSpeech("CHAT_STATE");
                 Game.DisplayHelp("Take the ~b~officer~w~ to the nearest ~g~hospital~w~");
                 NativeFunction.Natives.CAN_SHUFFLE_SEAT<bool>(Player.LastVehicle, false);
@@ -259,7 +264,8 @@ namespace Secondary_Callouts.Callouts
             else
             {
                 cop.PlayAnimation(failCop);
-                Player.PlayAnimationWait(failPlayer);
+                Player.PlayAnimation(failPlayer);
+                GameFiber.Sleep(failPlayer.AnimationTime);
                 Player.PlayAmbientSpeech("GENERIC_SHOCKED_HIGH");
                 _procHost.SwapProcesses(SuccessFail, WaitForPursuitEnd);
             }
@@ -268,6 +274,11 @@ namespace Secondary_Callouts.Callouts
         private void WaitForPursuitEnd()
         {
             if (!PedCheck(PedList)) return;
+
+            var crime = CopPedList[0].IsAlive
+                ? "Firearm attack on an officer; attempted murder of officer; resisting arrest"
+                : "Murder of an officer; resisting arrest";
+            GiveCourtCase(PedList.Where(p => p.IsAlive).ToList(), crime);
 
             this.End();
             _procHost.Stop();

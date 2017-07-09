@@ -57,7 +57,6 @@ namespace Secondary_Callouts.DEBUG
             AddPedListWeapons(PedList, PedType.Type.Suspect);
             "Peds given weapons and data stored".AddLog();
             CreatePursuit(PedList);
-            GameFiber.Sleep(250);
             "Pursuit created".AddLog();
             return base.OnCalloutAccepted();
         }

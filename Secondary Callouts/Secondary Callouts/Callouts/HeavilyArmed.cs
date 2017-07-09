@@ -125,6 +125,7 @@ namespace Secondary_Callouts.Callouts
                     PedList = SuspectPositionCheck(PedList);
                     if (PedCheck(PedList.ToList()))
                     {
+                        GiveCourtCase(PedList.Where(p => p.IsAlive).ToList(), "Assault with a deadly weapon; Possession of an illegal firearm");
                         CalloutFinished();
                         this.End();
                     }

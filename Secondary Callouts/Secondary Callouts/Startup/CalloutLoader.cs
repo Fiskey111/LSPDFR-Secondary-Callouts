@@ -22,7 +22,7 @@ namespace Secondary_Callouts.Startup
             //RegisterCallout(typeof(OfficerShot));
 
 #if DEBUG
-            RegisterCallout(typeof(DEBUG.TestCallout));
+            //RegisterCallout(typeof(DEBUG.TestCallout));
 #endif
             $"{_calloutNumber} high-quality callouts loaded!".AddLog(true);
         }

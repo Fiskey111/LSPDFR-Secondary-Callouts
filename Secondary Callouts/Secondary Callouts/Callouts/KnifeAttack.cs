@@ -107,6 +107,7 @@ namespace Secondary_Callouts.Callouts
                     _targetList = SuspectPositionCheck(_targetList);
                     if (PedCheck(PedList.ToList()))
                     {
+                        GiveCourtCase(PedList.Where(p => p.IsAlive).ToList(), "Assault and battery with a deadly weapon");
                         CalloutFinished();
                         this.End();
                     }

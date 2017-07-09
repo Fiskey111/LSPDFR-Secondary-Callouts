@@ -169,6 +169,7 @@ namespace Secondary_Callouts.Callouts
                     IsNearAnyPed(_ballasList, _lostList);
                     if (PedCheck(_ballasList) && PedCheck(_lostList))
                     {
+                        GiveCourtCase(PedList.Where(p => p.IsAlive).ToList(), "Assault with a deadly weapon; Murder");
                         CalloutFinished();
                         this.End();
                     }
